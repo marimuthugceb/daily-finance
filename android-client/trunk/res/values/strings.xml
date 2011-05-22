@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string formatted="false" name="sum_on_tickets">Sum denne måned: &#37;s mad, &#37;s ikke mad.</string>
+    <string formatted="false" name="ticket_title">Bon for &#37;s den &#37;s.</string>
+    <string formatted="false" name="sum">Sum</string>
+    <string name="app_name">Grosery shopping</string>
+    <string name="store_prompt">Vælg butik</string>
+    <string name="category_prompt">Vælg varekategori</string>
+    <string name="product_prompt">Vælg vare</string>
+    <string name="ticket_list_title">Bonliste</string>
+    <string name="new_ticket_title">Ny bon</string>
+    <string name="ticket_product_price_title">Angivelse af pris</string>
+    <string name="settings">Indstillinger</string>
+    <string name="add_ticket">Ny bon</string>
+    <string name="remove_ticket">Slet bon</string>
+    <string name="remove">Slet</string> 
+    <string name="add">Tilføj</string>
+    <string name="save">Gem</string>
+    <string name="add_by_scan">Tilføj ved scan</string>
+    <string name="edit_category">Tilføj/rediger kategori</string>
+    <string name="edit_shop">Tilføj/rediger butik</string>
+</resources>

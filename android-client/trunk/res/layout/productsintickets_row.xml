@@ -1,0 +1,39 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+
+    android:padding="6dip">
+
+    <TextView
+        android:id="@+id/priceLine"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:textSize="23sp"
+        android:textStyle="bold"
+        android:text="1" />
+    <TextView
+        android:id="@+id/firstLine"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:text="My Application" />
+    <TextView
+        android:id="@+id/secondLine"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/firstLine"
+        android:singleLine="true"
+        android:ellipsize="marquee"
+        android:text="Simple application that shows how to use RelativeLayout" />
+
+    <TextView
+        android:id="@+id/price"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="6dip"
+        android:textSize="23sp"
+        android:textStyle="bold"
+        android:gravity="right"
+        android:text="xx.xx" />
+</RelativeLayout>
