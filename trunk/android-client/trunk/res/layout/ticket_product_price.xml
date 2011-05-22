@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
+    <TextView
+        android:id="@+id/singleprice_label"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="2px"
+        android:text="Pris for et styk"/>
+    <EditText
+        android:id="@+id/singleprice"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:singleLine="true"
+        android:numeric="decimal"
+        android:layout_below="@id/singleprice_label"/>
+    <TextView
+        android:id="@+id/pices_label"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/singleprice"
+        android:text="Antal styk"/>
+    <EditText
+        android:id="@+id/pices"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:numeric="integer"
+        android:singleLine="true"
+        android:layout_below="@id/pices_label"/>
+    <TextView
+        android:id="@+id/multiprice_label"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/pices"
+        android:text="Pris samlet (ved rabat)"/>
+    <EditText
+        android:id="@+id/multiprice"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:numeric="decimal"
+        android:singleLine="true"
+        android:layout_below="@id/multiprice_label"/>
+    <Button
+        android:id="@+id/save"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/multiprice"
+        android:text="Gem" />
+</RelativeLayout>

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
+
+    <TextView
+        android:id="@+id/name_label"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="Navn"/>
+    <EditText
+        android:id="@+id/name"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:drawable/editbox_background"
+        android:singleLine="true"
+        android:inputType="textCapSentences"
+        android:layout_below="@id/name_label"/>
+    <!--<TextView
+        android:id="@+id/type_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/name"
+        android:text="Mad/ikke mad:"/>-->
+    <CheckBox
+        android:id="@+id/food"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Mad"
+        android:layout_below="@id/name"/>
+    <Button
+        android:id="@+id/remove"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/food"
+        android:layout_alignParentLeft="true"
+        android:text="@string/remove" />
+    <Button
+        android:id="@+id/save"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/food"
+        android:layout_toRightOf="@id/remove"
+        android:layout_alignParentRight="true"
+        android:text="@string/save" />
+</RelativeLayout>

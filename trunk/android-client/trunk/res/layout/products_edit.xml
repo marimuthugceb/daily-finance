@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
+    <TextView
+        android:id="@+id/products_label"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:textSize="15sp"
+        android:text="Opret/rediger vare"/>
+    <TextView
+        android:id="@+id/ean_label"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/products_label"
+        android:text="EAN (stregkodenr):"/>
+    <TextView
+        android:id="@+id/ean"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:drawable/editbox_background"
+        android:numeric="integer"
+        android:singleLine="true"
+        android:layout_below="@id/ean_label"/>
+    <TextView
+        android:id="@+id/name_label"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/ean"
+        android:text="Varenavn:"/>
+    <EditText
+        android:id="@+id/name"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:drawable/editbox_background"
+        android:singleLine="true"
+        android:inputType="textCapSentences"
+        android:layout_below="@id/name_label"/>
+    <TextView
+        android:id="@+id/category_label"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/name"
+        android:text="Vælg varekategori:"/>
+    <Spinner
+        android:id="@+id/category"
+        android:prompt="@string/category_prompt"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/category_label"/>
+    <TextView
+        android:id="@+id/manufacturer_label"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/category"
+        android:text="Producent:"/>
+    <EditText
+        android:id="@+id/manufacturer"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:inputType="textCapSentences"
+        android:background="@android:drawable/editbox_background"
+        android:singleLine="true"
+        android:layout_below="@id/manufacturer_label"/>
+    <TextView
+        android:id="@+id/singleprize_label"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/manufacturer"
+        android:text="Pris for 1 styk:"/>
+    <EditText
+        android:id="@+id/singleprize"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:numeric="decimal"
+        android:background="@android:drawable/editbox_background"
+        android:singleLine="true"
+        android:layout_below="@id/singleprize_label"/>
+    <Button
+        android:id="@+id/save"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/singleprize"
+        android:layout_alignParentRight="true"
+        android:text="@string/save" />
+    <Button
+        android:id="@+id/remove"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/singleprize"
+        android:layout_alignParentLeft="true"
+        android:text="@string/remove" />
+</RelativeLayout>
