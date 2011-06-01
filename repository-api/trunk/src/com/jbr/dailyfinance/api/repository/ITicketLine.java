@@ -4,7 +4,7 @@ package com.jbr.dailyfinance.api.repository;
  *
  * @author jbr
  */
-public interface ITicketLine {
+public interface ITicketLine extends Entity {
     Long getId();
     Long getAmount();
     Integer getNumber();

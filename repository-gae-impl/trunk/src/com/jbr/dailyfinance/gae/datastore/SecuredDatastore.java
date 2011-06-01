@@ -22,15 +22,17 @@ import static com.google.appengine.api.datastore.FetchOptions.Builder.*;
  *
  * @author jbr
  */
-public class SecuredDatastore {
+public class SecuredDatastore  {
     final static UserService userService = UserServiceFactory.getUserService();
     final static DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 
-    public static <T extends SecurableEntity> T put(T entity) {
+    public <T extends SecurableEntity> T put(T entity) {
         entity.setUser(userService.getCurrentUser());
         Key key = datastore.put(entity.getEntity());
         return (T) entity;
     }
+
+
 
     public static <T extends SecurableEntity> T get(Class clazz, long id)
             throws EntityNotFoundException, NotAllowedException {
@@ -79,6 +81,7 @@ public class SecuredDatastore {
         }
         return toList;
     }
+
 
     /*
     public Query newQuery(String sql) {
