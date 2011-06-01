@@ -4,7 +4,7 @@ package com.jbr.dailyfinance.api.repository;
  *
  * @author jbr
  */
-public interface ITicket {
+public interface ITicket extends Entity {
 
     Long getId();
     Long getStoreId();

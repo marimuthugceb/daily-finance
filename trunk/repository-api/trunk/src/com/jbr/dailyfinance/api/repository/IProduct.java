@@ -3,7 +3,7 @@ package com.jbr.dailyfinance.api.repository;
  *
  * @author jbr
  */
-public interface IProduct {
+public interface IProduct extends Entity {
     Long getId();
     Long getCategoryId();
     String getEan();
