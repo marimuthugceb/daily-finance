@@ -26,7 +26,7 @@ public class SecuredDatastore  {
     final static UserService userService = UserServiceFactory.getUserService();
     final static DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 
-    public <T extends SecurableEntity> T put(T entity) {
+    public static <T extends SecurableEntity> T put(T entity) {
         entity.setUser(userService.getCurrentUser());
         Key key = datastore.put(entity.getEntity());
         return (T) entity;

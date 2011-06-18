@@ -7,11 +7,13 @@ import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.users.User;
 import java.io.Serializable;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
  * @author jbr
  */
+@XmlTransient
 public abstract class BaseEntity implements Serializable, SecurableEntity {
     protected final Entity entity;
     protected final String kind;
