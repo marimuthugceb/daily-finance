@@ -1,8 +1,6 @@
 package com.jbr.dailyfinance.gae.datastore;
 
-import com.jbr.dailyfinance.gae.impl.repository.SecurableEntity;
-import java.util.ArrayList;
-import com.google.appengine.api.datastore.Query;
+import com.jbr.dailyfinance.api.repository.server.SecurableEntity;
 import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.DatastoreService;
@@ -10,13 +8,19 @@ import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.PreparedQuery;
+import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.users.UserService;
 import com.google.appengine.api.users.UserServiceFactory;
+import com.jbr.dailyfinance.gae.impl.repository.BaseEntity;
+import com.jbr.dailyfinance.gae.impl.repository.User;
+
+import static com.google.appengine.api.datastore.FetchOptions.Builder.*;
+import com.jbr.dailyfinance.gae.impl.repository.DatastoreEntity;
 
 import java.lang.reflect.Constructor;
+import java.util.ArrayList;
 import java.util.List;
-import static com.google.appengine.api.datastore.FetchOptions.Builder.*;
 
 /**
  *
@@ -25,27 +29,27 @@ import static com.google.appengine.api.datastore.FetchOptions.Builder.*;
 public class SecuredDatastore  {
     final static UserService userService = UserServiceFactory.getUserService();
     final static DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+    final static User user = new User();
 
-    public static <T extends SecurableEntity> T put(T entity) {
-        entity.setUser(userService.getCurrentUser());
+    public static <T extends DatastoreEntity> T put(T entity) {
+        entity.setUser(user);
         Key key = datastore.put(entity.getEntity());
         return (T) entity;
     }
 
-
-
-    public static <T extends SecurableEntity> T get(Class clazz, long id)
+    public static <T extends DatastoreEntity> T get(Class clazz, long id)
             throws EntityNotFoundException, NotAllowedException {
-        Entity entity = datastore.get(KeyFactory.createKey(clazz.getSimpleName(), id));
+        Entity entity = datastore.get(KeyFactory.createKey(
+                clazz.getSimpleName().toLowerCase(), id));
         final T securedEntity = (T) toClazz(clazz, entity);
         if (securedEntity.getUser().getEmail().equalsIgnoreCase(
                 userService.getCurrentUser().getEmail()))
             return securedEntity;
         else
-            throw new NotAllowedException("No access"); 
+            throw new NotAllowedException("No access");
     }
 
-    public static <T extends SecurableEntity> T toClazz(Class<T> clazz, Entity entity) throws RuntimeException {
+    public static <T extends DatastoreEntity> T toClazz(Class<T> clazz, Entity entity) throws RuntimeException {
         try {
             Constructor constructor = clazz.getConstructor(Entity.class);
             Object newInstance = constructor.newInstance(entity);
@@ -64,14 +68,16 @@ public class SecuredDatastore  {
         }
     }
 
-    public static void delete(SecurableEntity entity) throws NotAllowedException {
+    public static void delete(DatastoreEntity entity) throws NotAllowedException {
         if (entity.getUser().getEmail().equals(userService.getCurrentUser().getEmail()))
             datastore.delete(entity.getEntity().getKey());
         else
             throw new NotAllowedException();
     }
 
-    public static <T extends SecurableEntity> List<T> getList(Class clazz, Query query, int rowLimit) {
+    public static <T extends DatastoreEntity> List<T> getList(Class clazz, Query query, int rowLimit) {
+        if (query == null)
+            throw new IllegalArgumentException("query is null");
         query.addFilter("user", FilterOperator.EQUAL, userService.getCurrentUser());
         PreparedQuery pq = datastore.prepare(query);
         final List<Entity> asList = pq.asList(withLimit(rowLimit));
@@ -79,6 +85,7 @@ public class SecuredDatastore  {
         for (Entity entity : asList) {
             toList.add((T) toClazz(clazz, entity));
         }
+        System.out.println("Numbers in list " + toList.size());
         return toList;
     }
 

@@ -2,7 +2,7 @@ package com.jbr.dailyfinance.gae.impl.repository;
 
 
 import com.google.appengine.api.datastore.Entity;
-import com.jbr.dailyfinance.api.repository.ITicketLine;
+import com.jbr.dailyfinance.api.repository.client.ITicketLine;
 
 /**
  *
