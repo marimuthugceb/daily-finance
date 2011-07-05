@@ -1,7 +1,7 @@
 package com.jbr.dailyfinance.gae.impl.repository;
 
 import com.google.appengine.api.datastore.Entity;
-import com.jbr.dailyfinance.api.repository.ICategory;
+import com.jbr.dailyfinance.api.repository.server.ICategorySecurable;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -13,9 +13,8 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name = "category")
 @XmlAccessorType(XmlAccessType.NONE)
-public class Category extends BaseEntity implements ICategory {
+public class Category extends BaseEntity implements ICategorySecurable {
     private static final String KIND = "category";
-
 
     private enum p {
         name,
@@ -55,12 +54,8 @@ public class Category extends BaseEntity implements ICategory {
         return (Type) entity.getProperty(p.type.toString());
     }
 
-
     @Override
     public void setType(Type mType) {
         entity.setProperty(p.type.toString(), mType);
     }
-
-    
-
 }

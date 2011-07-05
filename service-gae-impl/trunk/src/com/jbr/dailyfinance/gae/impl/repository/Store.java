@@ -1,7 +1,9 @@
 package com.jbr.dailyfinance.gae.impl.repository;
 
-import com.jbr.dailyfinance.api.repository.IStore;
 import com.google.appengine.api.datastore.Entity;
+import com.jbr.dailyfinance.api.repository.server.IStoreSecurable;
+import com.jbr.dailyfinance.api.repository.server.IUser;
+import com.jbr.dailyfinance.api.repository.server.StoreSecurable;
 import java.io.Serializable;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -14,39 +16,60 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name = "store")
 @XmlAccessorType(XmlAccessType.NONE)
-public class Store extends BaseEntity
-        implements Serializable, Comparable<Store>, IStore{
+public class Store extends StoreSecurable implements Serializable, IStoreSecurable, DatastoreEntity, Comparable<Store> {
+    private BaseEntity e;
+    public static final String KIND = "store";
 
-    private static final String KIND = "store";
     private enum p {
         name;
     }
 
-    public static Store fetchById(Long id) {
-        return new Store(fetchById(id, KIND));
+    @XmlElement
+    @Override
+    public Long getId() {
+        return e.getId();
     }
 
-    public Store(Entity entity) {
-        super(entity);
+    public void setId(Long id) {
+        e = new BaseEntity(id, KIND);
+    }
+
+    @Override
+    public Entity getEntity() {
+        return e.getEntity();
+    }
+
+    public Store(Entity en) {
+        e = new BaseEntity(en);
     }
 
     public Store() {
-        super(KIND);
+        e = new BaseEntity(KIND);
     }
 
     public Store(Long id) {
-        super(id, KIND);
+        e = new BaseEntity(id, KIND);
     }
 
     @XmlElement
     @Override
     public String getName() {
-        return (String) entity.getProperty(p.name.toString());
+        return (String) e.entity.getProperty(p.name.toString());
     }
 
     @Override
     public void setName(String name) {
-        entity.setProperty(p.name.toString(), name);
+        e.entity.setProperty(p.name.toString(), name);
+    }
+
+    @Override
+    public IUser getUser() {
+        return e.getUser();
+    }
+
+    @Override
+    public void setUser(IUser user) {
+        e.setUser(user);
     }
 
     @Override

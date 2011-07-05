@@ -5,6 +5,8 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.users.User;
+import com.jbr.dailyfinance.api.repository.server.IUser;
+import com.jbr.dailyfinance.api.repository.server.SecurableEntity;
 import java.io.Serializable;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlTransient;
@@ -14,7 +16,7 @@ import javax.xml.bind.annotation.XmlTransient;
  * @author jbr
  */
 @XmlTransient
-public abstract class BaseEntity implements Serializable, SecurableEntity {
+public class BaseEntity implements Serializable, SecurableEntity, DatastoreEntity  {
     protected final Entity entity;
     protected final String kind;
 
@@ -46,14 +48,18 @@ public abstract class BaseEntity implements Serializable, SecurableEntity {
     }
 
     @Override
-    public User getUser() {
-        return (User) entity.getProperty("user");
+    public IUser getUser() {
+        final User u = (User) entity.getProperty("user");
+        return new com.jbr.dailyfinance.gae.impl.repository.User(u);
     }
 
     @Override
-    public void setUser(User user) {
-        entity.setProperty("user", user);
+    public void setUser(IUser user) {
+        User u = new User(user.getEmail(), user.getAuthDomain(), user.getUserId());
+        entity.setProperty("user", u);
     }
+
+
 
     @Override
     public Entity getEntity() {

@@ -1,7 +1,7 @@
 package com.jbr.dailyfinance.gae.impl.repository;
 
 import com.google.appengine.api.datastore.Entity;
-import com.jbr.dailyfinance.api.repository.ITicket;
+import com.jbr.dailyfinance.api.repository.client.ITicket;
 
 /**
  *
