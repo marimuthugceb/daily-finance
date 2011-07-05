@@ -1,4 +1,4 @@
-package com.jbr.dailyfinance.api.repository;
+package com.jbr.dailyfinance.api.repository.client;
 /**
  *
  * @author jbr
