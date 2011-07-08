@@ -13,7 +13,7 @@ import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.users.UserService;
 import com.google.appengine.api.users.UserServiceFactory;
 import com.jbr.dailyfinance.gae.impl.repository.BaseEntity;
-import com.jbr.dailyfinance.gae.impl.repository.User;
+import com.jbr.dailyfinance.gae.impl.repository.UserImpl;
 
 import static com.google.appengine.api.datastore.FetchOptions.Builder.*;
 import com.jbr.dailyfinance.gae.impl.repository.DatastoreEntity;
@@ -29,18 +29,18 @@ import java.util.List;
 public class SecuredDatastore  {
     final static UserService userService = UserServiceFactory.getUserService();
     final static DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-    final static User user = new User();
+    final static UserImpl user = new UserImpl();
 
     public static <T extends DatastoreEntity> T put(T entity) {
         entity.setUser(user);
         Key key = datastore.put(entity.getEntity());
+        System.out.println("Puttet key: " + key.getKind());
         return (T) entity;
     }
 
-    public static <T extends DatastoreEntity> T get(Class clazz, long id)
+    public static <T extends DatastoreEntity> T get(Class clazz, String kind, long id)
             throws EntityNotFoundException, NotAllowedException {
-        Entity entity = datastore.get(KeyFactory.createKey(
-                clazz.getSimpleName().toLowerCase(), id));
+        Entity entity = datastore.get(KeyFactory.createKey(kind, id));
         final T securedEntity = (T) toClazz(clazz, entity);
         if (securedEntity.getUser().getEmail().equalsIgnoreCase(
                 userService.getCurrentUser().getEmail()))

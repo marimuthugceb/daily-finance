@@ -6,7 +6,7 @@ import com.jbr.dailyfinance.api.repository.client.Entity;
  *
  * @author jbr
  */
-public interface SecurableEntity<E extends Entity> extends Entity {
-    public IUser getUser();
-    public void setUser(IUser user);
+public interface SecurableEntity extends Entity {
+    public User getUser();
+    public void setUser(User user);
 }

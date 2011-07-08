@@ -1,29 +1,31 @@
 package com.jbr.dailyfinance.gae.impl.repository;
 
 import com.google.appengine.api.datastore.Entity;
-import com.jbr.dailyfinance.api.repository.client.ITicket;
+import com.jbr.dailyfinance.api.repository.client.Ticket;
+import com.jbr.dailyfinance.api.repository.server.TicketSecurable;
+import java.util.Date;
 
 /**
  *
  * @author jbr
  */
-public class Ticket extends BaseEntity implements ITicket {
-    private static final String KIND = "ticket";
+public class TicketImpl extends BaseEntity implements Ticket, TicketSecurable {
+    public static final String KIND = "ticket";
 
     private enum p {
         ticketDate,
         storeId;
     }
 
-    public Ticket(Long id) {
+    public TicketImpl(Long id) {
         super(id, KIND);
     }
 
-    public Ticket() {
+    public TicketImpl() {
         super(KIND);
     }
 
-    public Ticket(Entity entity) {
+    public TicketImpl(Entity entity) {
         super(entity);
     }
 
@@ -33,8 +35,8 @@ public class Ticket extends BaseEntity implements ITicket {
     }
 
     @Override
-    public String getTicketDate() {
-        return (String) entity.getProperty(p.ticketDate.toString());
+    public Date getTicketDate() {
+        return (Date) entity.getProperty(p.ticketDate.toString());
     }
 
     @Override
@@ -43,7 +45,7 @@ public class Ticket extends BaseEntity implements ITicket {
     }
 
     @Override
-    public void setTicketDate(String mTicketDate) {
+    public void setTicketDate(Date mTicketDate) {
         entity.setProperty(p.ticketDate.toString(), mTicketDate);
     }
 

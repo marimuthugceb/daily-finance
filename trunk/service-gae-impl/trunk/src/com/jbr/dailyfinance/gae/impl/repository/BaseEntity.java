@@ -4,9 +4,8 @@ import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.datastore.KeyFactory;
-import com.google.appengine.api.users.User;
-import com.jbr.dailyfinance.api.repository.server.IUser;
 import com.jbr.dailyfinance.api.repository.server.SecurableEntity;
+import com.jbr.dailyfinance.api.repository.server.User;
 import java.io.Serializable;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlTransient;
@@ -17,7 +16,7 @@ import javax.xml.bind.annotation.XmlTransient;
  */
 @XmlTransient
 public class BaseEntity implements Serializable, SecurableEntity, DatastoreEntity  {
-    protected final Entity entity;
+    protected Entity entity;
     protected final String kind;
 
     public BaseEntity(Entity entity) {
@@ -48,18 +47,19 @@ public class BaseEntity implements Serializable, SecurableEntity, DatastoreEntit
     }
 
     @Override
-    public IUser getUser() {
-        final User u = (User) entity.getProperty("user");
-        return new com.jbr.dailyfinance.gae.impl.repository.User(u);
+    public User getUser() {
+        final com.google.appengine.api.users.User u =
+                (com.google.appengine.api.users.User) entity.getProperty("user");
+        return new UserImpl(u);
     }
 
     @Override
-    public void setUser(IUser user) {
-        User u = new User(user.getEmail(), user.getAuthDomain(), user.getUserId());
+    public void setUser(User user) {
+        com.google.appengine.api.users.User u =
+                new com.google.appengine.api.users.User(
+                user.getEmail(), user.getAuthDomain(), user.getUserId());
         entity.setProperty("user", u);
     }
-
-
 
     @Override
     public Entity getEntity() {
@@ -69,5 +69,10 @@ public class BaseEntity implements Serializable, SecurableEntity, DatastoreEntit
     @XmlElement
     public Long getId() {
         return entity.getKey().getId();
+    }
+
+    public void setId(Long id) {
+        System.out.println("Stng id to " + id);
+        entity = new Entity(KeyFactory.createKey(kind, id));
     }
 }

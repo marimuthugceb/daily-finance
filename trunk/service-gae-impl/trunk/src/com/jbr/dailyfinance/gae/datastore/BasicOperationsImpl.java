@@ -29,7 +29,7 @@ public abstract class BasicOperationsImpl<E extends SecurableEntity> implements 
     @Override
     public E get(Long id) {
         try {
-            return (E)SecuredDatastore.get(clazz, id);
+            return (E)SecuredDatastore.get(clazz, kind, id);
         } catch (EntityNotFoundException ex) {
             throw new NotFoundException(ex);
         } catch (NotAllowedException ex) {

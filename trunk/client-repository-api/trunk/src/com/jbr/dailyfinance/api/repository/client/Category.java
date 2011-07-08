@@ -4,7 +4,7 @@ package com.jbr.dailyfinance.api.repository.client;
  *
  * @author jbr
  */
-public interface ICategory extends Entity {
+public interface Category extends Entity {
 
     public enum Type {
         food,

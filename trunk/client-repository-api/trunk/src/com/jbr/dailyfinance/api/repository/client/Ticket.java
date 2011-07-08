@@ -1,15 +1,17 @@
 package com.jbr.dailyfinance.api.repository.client;
 
+import java.util.Date;
+
 /**
  *
  * @author jbr
  */
-public interface ITicket extends Entity {
+public interface Ticket extends Entity {
 
     Long getId();
     Long getStoreId();
-    String getTicketDate();
+    Date getTicketDate();
     void setStoreId(Long mStoreId);
-    void setTicketDate(String mTicketDate);
+    void setTicketDate(Date mTicketDate);
 
 }

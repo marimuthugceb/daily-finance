@@ -1,9 +1,9 @@
 package com.jbr.dailyfinance.web.rest;
 
-import com.jbr.dailyfinance.api.repository.client.Product;
-import com.jbr.dailyfinance.api.repository.server.ProductSecurable;
-import com.jbr.dailyfinance.gae.datastore.ProductServicesImpl;
-import com.jbr.dailyfinance.gae.impl.repository.ProductImpl;
+import com.jbr.dailyfinance.api.repository.client.Store;
+import com.jbr.dailyfinance.api.repository.server.StoreSecurable;
+import com.jbr.dailyfinance.gae.datastore.StoreServicesImpl;
+import com.jbr.dailyfinance.gae.impl.repository.StoreImpl;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -21,31 +21,29 @@ import javax.ws.rs.Produces;
  *
  * @author jbr
  */
-@Path("/product/")
-public class ProductResource extends BaseEntityResource<ProductSecurable,
-        ProductServicesImpl> {
+@Path("/store/")
+public class StoreResource extends BaseEntityResource<StoreSecurable,
+        StoreServicesImpl> {
 
-    public ProductResource() {
-        super(new ProductServicesImpl());
+    public StoreResource() {
+        super(new StoreServicesImpl());
     }
 
     @GET
     @Produces({"application/json", "application/xml"})
     @Path("/makeTest")
-    public ProductSecurable makeAProduct() {
-        final ProductSecurable product = new ProductImpl();
-        product.setName("Mælk");
-        product.setManufacturer("Arla");
-        product.setPrice(5.95d);
-        put(product);
-        return product;
+    public StoreSecurable makeAStore() {
+        final StoreSecurable store = new StoreImpl();
+        store.setName("Bilka Næstved");
+        put(store);
+        return store;
     }
 
     @GET
     @Produces({"application/json", "application/xml"})
-    @Path("/{productId}")
-    public Product getProduct(@PathParam ("productId") Long productId) {
-        return get(productId);
+    @Path("/{storeId}")
+    public Store getStore(@PathParam ("storeId") Long storeId) {
+        return get(storeId);
     }
 
     @DELETE
@@ -56,21 +54,21 @@ public class ProductResource extends BaseEntityResource<ProductSecurable,
 
     @DELETE
     @Consumes({"application/json", "application/xml"})
-    public void removeDish(ProductSecurable product) {
-        removeById(product.getId());
+    public void removeDish(StoreSecurable store) {
+        removeById(store.getId());
     }
 
     @PUT
     @Produces({"application/json", "application/xml"})
     @Consumes({"application/json", "application/xml"})
-    public Product edit(ProductImpl entity) {
+    public Store edit(StoreImpl entity) {
         return put(entity);
     }
 
     @POST
     @Produces({"application/json", "application/xml"})
     @Consumes({"application/json", "application/xml"})
-    public Product add(ProductImpl entity) {
+    public Store add(StoreImpl entity) {
         //dish.setId(null);
         System.out.println(entity.getName());
         return put(entity);
@@ -80,22 +78,22 @@ public class ProductResource extends BaseEntityResource<ProductSecurable,
     @Produces({"application/json", "application/xml"})
     @Consumes({"application/json", "application/xml"})
     @Path("/addlist")
-    public void addList(List<ProductImpl> products) {
+    public void addList(List<StoreImpl> stores) {
         //dish.setId(null);
-        for (ProductSecurable product : products) {
-            put(product);
+        for (StoreSecurable store : stores) {
+            put(store);
         }
     }
 
     @GET
     @Produces({"application/json", "application/xml"})
     @Path("/list")
-    public List<ProductImpl> getAll() {
-        List<ProductSecurable> all = getServiceImpl().list();
-        Collections.sort(all, new Comparator<ProductSecurable>() {
+    public List<StoreImpl> getAll() {
+        List<StoreSecurable> all = getServiceImpl().list();
+        Collections.sort(all, new Comparator<StoreSecurable>() {
 
             @Override
-            public int compare(ProductSecurable o1, ProductSecurable o2) {
+            public int compare(StoreSecurable o1, StoreSecurable o2) {
                 return o1.getName().compareTo(o2.getName());
             }
         });
