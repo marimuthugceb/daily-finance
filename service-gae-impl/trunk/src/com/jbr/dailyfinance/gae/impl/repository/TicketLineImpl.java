@@ -2,14 +2,15 @@ package com.jbr.dailyfinance.gae.impl.repository;
 
 
 import com.google.appengine.api.datastore.Entity;
-import com.jbr.dailyfinance.api.repository.client.ITicketLine;
+import com.jbr.dailyfinance.api.repository.client.TicketLine;
+import com.jbr.dailyfinance.api.repository.server.TicketLineSecurable;
 
 /**
  *
  * @author jbr
  */
-public class TicketLine extends BaseEntity implements ITicketLine {
-    private static final String KIND = "ticketline";
+public class TicketLineImpl extends BaseEntity implements TicketLine, TicketLineSecurable {
+    public static final String KIND = "ticketline";
 
     private enum p {
         number,
@@ -18,22 +19,22 @@ public class TicketLine extends BaseEntity implements ITicketLine {
         amount;
     }
 
-    public TicketLine(Long id) {
+    public TicketLineImpl(Long id) {
         super(id, KIND);
     }
 
-    public TicketLine() {
+    public TicketLineImpl() {
         super(KIND);
     }
 
-    public TicketLine(Entity entity) {
+    public TicketLineImpl(Entity entity) {
         super(entity);
     }
 
 
     @Override
-    public Long getAmount() {
-        return (Long) entity.getProperty(p.amount.toString());
+    public Double getAmount() {
+        return (Double) entity.getProperty(p.amount.toString());
     }
 
     @Override
@@ -52,7 +53,7 @@ public class TicketLine extends BaseEntity implements ITicketLine {
     }
 
     @Override
-    public void setAmount(Long mAmount) {
+    public void setAmount(Double mAmount) {
         entity.setProperty(p.amount.toString(), mAmount);
     }
 

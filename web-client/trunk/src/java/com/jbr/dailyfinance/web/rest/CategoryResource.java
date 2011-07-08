@@ -1,9 +1,9 @@
 package com.jbr.dailyfinance.web.rest;
 
-import com.jbr.dailyfinance.api.repository.client.Product;
-import com.jbr.dailyfinance.api.repository.server.ProductSecurable;
-import com.jbr.dailyfinance.gae.datastore.ProductServicesImpl;
-import com.jbr.dailyfinance.gae.impl.repository.ProductImpl;
+import com.jbr.dailyfinance.api.repository.client.Category;
+import com.jbr.dailyfinance.api.repository.server.CategorySecurable;
+import com.jbr.dailyfinance.gae.datastore.CategoryServicesImpl;
+import com.jbr.dailyfinance.gae.impl.repository.CategoryImpl;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -21,31 +21,30 @@ import javax.ws.rs.Produces;
  *
  * @author jbr
  */
-@Path("/product/")
-public class ProductResource extends BaseEntityResource<ProductSecurable,
-        ProductServicesImpl> {
+@Path("/category/")
+public class CategoryResource extends BaseEntityResource<CategorySecurable,
+        CategoryServicesImpl> {
 
-    public ProductResource() {
-        super(new ProductServicesImpl());
+    public CategoryResource() {
+        super(new CategoryServicesImpl());
     }
 
     @GET
     @Produces({"application/json", "application/xml"})
     @Path("/makeTest")
-    public ProductSecurable makeAProduct() {
-        final ProductSecurable product = new ProductImpl();
-        product.setName("Mælk");
-        product.setManufacturer("Arla");
-        product.setPrice(5.95d);
-        put(product);
-        return product;
+    public CategorySecurable makeACategory() {
+        final CategorySecurable category = new CategoryImpl();
+        category.setName("Mælk");
+        category.setType(Category.Type.food);
+        put(category);
+        return category;
     }
 
     @GET
     @Produces({"application/json", "application/xml"})
-    @Path("/{productId}")
-    public Product getProduct(@PathParam ("productId") Long productId) {
-        return get(productId);
+    @Path("/{categoryId}")
+    public Category getCategory(@PathParam ("categoryId") Long categoryId) {
+        return get(categoryId);
     }
 
     @DELETE
@@ -56,21 +55,21 @@ public class ProductResource extends BaseEntityResource<ProductSecurable,
 
     @DELETE
     @Consumes({"application/json", "application/xml"})
-    public void removeDish(ProductSecurable product) {
-        removeById(product.getId());
+    public void removeDish(CategorySecurable category) {
+        removeById(category.getId());
     }
 
     @PUT
     @Produces({"application/json", "application/xml"})
     @Consumes({"application/json", "application/xml"})
-    public Product edit(ProductImpl entity) {
+    public Category edit(CategoryImpl entity) {
         return put(entity);
     }
 
     @POST
     @Produces({"application/json", "application/xml"})
     @Consumes({"application/json", "application/xml"})
-    public Product add(ProductImpl entity) {
+    public Category add(CategoryImpl entity) {
         //dish.setId(null);
         System.out.println(entity.getName());
         return put(entity);
@@ -80,22 +79,22 @@ public class ProductResource extends BaseEntityResource<ProductSecurable,
     @Produces({"application/json", "application/xml"})
     @Consumes({"application/json", "application/xml"})
     @Path("/addlist")
-    public void addList(List<ProductImpl> products) {
+    public void addList(List<CategoryImpl> categorys) {
         //dish.setId(null);
-        for (ProductSecurable product : products) {
-            put(product);
+        for (CategorySecurable category : categorys) {
+            put(category);
         }
     }
 
     @GET
     @Produces({"application/json", "application/xml"})
     @Path("/list")
-    public List<ProductImpl> getAll() {
-        List<ProductSecurable> all = getServiceImpl().list();
-        Collections.sort(all, new Comparator<ProductSecurable>() {
+    public List<CategoryImpl> getAll() {
+        List<CategorySecurable> all = getServiceImpl().list();
+        Collections.sort(all, new Comparator<CategorySecurable>() {
 
             @Override
-            public int compare(ProductSecurable o1, ProductSecurable o2) {
+            public int compare(CategorySecurable o1, CategorySecurable o2) {
                 return o1.getName().compareTo(o2.getName());
             }
         });

@@ -1,9 +1,10 @@
 package com.jbr.dailyfinance.api.repository.server;
 
+import com.jbr.dailyfinance.api.repository.client.Category;
+
 /**
  *
  * @author jbr
  */
-public abstract class CategorySecurable implements ICategorySecurable, SecurableEntity {
-
+public interface CategorySecurable extends Category, SecurableEntity {
 }

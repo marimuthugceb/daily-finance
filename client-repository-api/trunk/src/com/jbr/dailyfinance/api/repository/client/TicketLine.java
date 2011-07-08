@@ -4,13 +4,13 @@ package com.jbr.dailyfinance.api.repository.client;
  *
  * @author jbr
  */
-public interface ITicketLine extends Entity {
+public interface TicketLine extends Entity {
     Long getId();
-    Long getAmount();
+    Double getAmount();
     Integer getNumber();
     Long getProductId();
     Long getTicketId();
-    void setAmount(Long mAmount);
+    void setAmount(Double mAmount);
     void setNumber(Integer mNumber);
     void setProductId(Long mProductId);
     void setTicketId(Long mTicketId);

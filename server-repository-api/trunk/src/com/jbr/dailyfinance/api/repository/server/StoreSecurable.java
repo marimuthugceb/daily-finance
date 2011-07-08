@@ -1,9 +1,10 @@
 package com.jbr.dailyfinance.api.repository.server;
 
+import com.jbr.dailyfinance.api.repository.client.Store;
+
 /**
  *
  * @author jbr
  */
-public abstract class StoreSecurable implements IStoreSecurable, SecurableEntity {
-
+public interface StoreSecurable extends Store, SecurableEntity {
 }

@@ -1,7 +1,7 @@
 package com.jbr.dailyfinance.gae.impl.repository;
 
 import com.google.appengine.api.datastore.Entity;
-import com.jbr.dailyfinance.api.repository.server.ICategorySecurable;
+import com.jbr.dailyfinance.api.repository.server.CategorySecurable;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -13,28 +13,28 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name = "category")
 @XmlAccessorType(XmlAccessType.NONE)
-public class Category extends BaseEntity implements ICategorySecurable {
-    private static final String KIND = "category";
+public class CategoryImpl extends BaseEntity implements CategorySecurable {
+    public static final String KIND = "category";
 
     private enum p {
         name,
         type;
     }
 
-    public Category(Long id) {
+    public CategoryImpl(Long id) {
         super(id, KIND);
     }
 
-    public Category() {
+    public CategoryImpl() {
         super(KIND);
     }
 
-    public Category(Entity entity) {
+    public CategoryImpl(Entity entity) {
         super(entity);
     }
 
-    public static Category fetchById(Long id) {
-        return new Category(fetchById(id, KIND));
+    public static CategoryImpl fetchById(Long id) {
+        return new CategoryImpl(fetchById(id, KIND));
     }
 
     @XmlElement
