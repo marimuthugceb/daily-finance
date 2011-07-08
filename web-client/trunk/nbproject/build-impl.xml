@@ -510,6 +510,9 @@ exists or setup the property manually. For example like this:
         <ant antfile="${project.daily-finance-service-gae-impl}/build.xml" inheritall="false" target="jar">
             <property name="deploy.on.save" value="false"/>
         </ant>
+        <ant antfile="${project.gwt-json-lib}/build.xml" inheritall="false" target="jar">
+            <property name="deploy.on.save" value="false"/>
+        </ant>
     </target>
     <target depends="init" if="dist.ear.dir" name="deps-ear-jar" unless="no.deps">
         <ant antfile="${project.daily-finance-client-repository-api}/build.xml" inheritall="false" target="jar">
@@ -522,6 +525,9 @@ exists or setup the property manually. For example like this:
             <property name="deploy.on.save" value="false"/>
         </ant>
         <ant antfile="${project.daily-finance-service-gae-impl}/build.xml" inheritall="false" target="jar">
+            <property name="deploy.on.save" value="false"/>
+        </ant>
+        <ant antfile="${project.gwt-json-lib}/build.xml" inheritall="false" target="jar">
             <property name="deploy.on.save" value="false"/>
         </ant>
     </target>
@@ -991,6 +997,7 @@ exists or setup the property manually. For example like this:
         <ant antfile="${project.daily-finance-server-repository-api}/build.xml" inheritall="false" target="clean"/>
         <ant antfile="${project.daily-finance-service-api}/build.xml" inheritall="false" target="clean"/>
         <ant antfile="${project.daily-finance-service-gae-impl}/build.xml" inheritall="false" target="clean"/>
+        <ant antfile="${project.gwt-json-lib}/build.xml" inheritall="false" target="clean"/>
     </target>
     <target depends="init" name="do-clean">
         <condition property="build.dir.to.clean" value="${build.web.dir}">

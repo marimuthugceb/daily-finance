@@ -13,6 +13,7 @@
     <!-- <inherits name="com.google.gwt.user.theme.dark.Dark"/> -->
     <inherits name="com.google.gwt.http.HTTP" />
     <inherits name='com.google.gwt.json.JSON'/>
+    <inherits name='com.jbr.gwt.json.JsonUtils'/>
 
     <extend-property name="locale" values="da"/>
     <entry-point class="com.jbr.dailyfinance.client.TicketEntryPoint"/>
