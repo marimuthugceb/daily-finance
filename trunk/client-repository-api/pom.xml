@@ -1,17 +1,40 @@
+
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.jbr.daily-finance</groupId>
     <artifactId>client-repository-api</artifactId>
     <packaging>jar</packaging>
-    <version>{project.version}</version>
     <name>daily-finance client-repository-api</name>
-    <url>http://maven.apache.org</url>
 
-<!--
     <parent>
-        <artifactId>com.jbr</artifactId>
-        <groupId>daily-finance</groupId>
-        <version>{project.version}</version>
+        <groupId>com.jbr</groupId>
+        <artifactId>daily-finance</artifactId>
+        <version>1.0-SNAPSHOT</version>
     </parent>
--->
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.6</source>
+                    <target>1.6</target>
+                    <encoding>${project.build.sourceEncoding}</encoding>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <configuration>
+                    <encoding>${project.build.sourceEncoding}</encoding>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.source>1.6</maven.compiler.source>
+        <maven.compiler.target>1.6</maven.compiler.target>
+    </properties>
 </project>
