@@ -39,13 +39,13 @@ public class TicketsUI extends Composite {
                 treeData.add("30.05.2011");
                 treeData.add("29.05.2011");
                 treeData.add("28.05.2011");
-                treeData.add("27.05.2011");
+                treeData.add("20.05.2011");
                 return new DefaultNodeInfo<String>(
                         new ListDataProvider<String>(treeData), new TextCell());
             }
 
             public boolean isLeaf(Object value) {
-
+                System.out.println("Is leaf of: " + value.toString());
                 return value == null ? false : true;
             }
         },null);
