@@ -1,0 +1,72 @@
+<!--
+Uncomment this for XHTML entities
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+-->
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+	xmlns:g="urn:import:com.google.gwt.user.client.ui"
+        xmlns:c='urn:import:com.google.gwt.user.cellview.client'>
+    <ui:style>
+
+    </ui:style>
+    <g:TabLayoutPanel barHeight="20">
+        <g:tab>
+            <g:header size='7'>
+                    Indtast nye indkøb
+            </g:header>
+            <g:SplitLayoutPanel>
+                <g:west size='200' unit='px'>
+                    <g:LayoutPanel>
+                        <g:layer top='2px' height='2em'>
+                            <g:Label>Indtastede bonner</g:Label>
+                        </g:layer>
+                        <g:layer>
+                            <c:CellTree ui:field='ticketTree'></c:CellTree>
+                        </g:layer>
+                    </g:LayoutPanel>
+                </g:west>
+                <g:center>
+                    <g:SplitLayoutPanel>
+                        <g:north size='100' unit='px'>
+                            <g:LayoutPanel >
+                                <g:layer>
+                                    <g:Label>Visning af sammentælling</g:Label>
+                                </g:layer>
+                            </g:LayoutPanel>
+                        </g:north>
+                        <g:center>
+                            <g:LayoutPanel>
+                                <g:layer top='2px' height='70px'>
+                                    <g:Label>Bon detaljer</g:Label>
+                                </g:layer>
+                                <g:layer top='71px' bottom='0px'>
+                                    <g:SplitLayoutPanel>
+                                        <g:east size='400' unit='px'>
+                                            <g:Label>Registrer nyt indkøb på bon</g:Label>
+                                        </g:east>
+                                        <g:center>
+                                            <g:Label>Indkøb på denne bon</g:Label>
+                                        </g:center>
+                                    </g:SplitLayoutPanel>
+
+                                </g:layer>
+                            </g:LayoutPanel>
+                        </g:center>
+                    </g:SplitLayoutPanel>
+                </g:center>
+            </g:SplitLayoutPanel>
+                
+        </g:tab>
+        <g:tab>
+            <g:header size='7'>
+                    Se summer
+            </g:header>
+            <g:Label>able</g:Label>
+        </g:tab>
+        <g:tab>
+            <g:header size='7'>
+                    Opsætning af varer mm.
+            </g:header>
+            <g:Label>able</g:Label>
+        </g:tab>
+    </g:TabLayoutPanel>
+</ui:UiBinder>
