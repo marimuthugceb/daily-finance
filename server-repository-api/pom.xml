@@ -2,9 +2,9 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.jbr.daily-finance</groupId>
-    <artifactId>client-repository-api</artifactId>
+    <artifactId>server-repository-api</artifactId>
     <packaging>jar</packaging>
-    <name>daily-finance client-repository-api</name>
+    <name>daily-finance server-repository-api</name>
 
     <parent>
         <groupId>com.jbr</groupId>

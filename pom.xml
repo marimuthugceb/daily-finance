@@ -20,6 +20,7 @@
  
    <modules>
        <module>client-repository-api</module>
+       <module>server-repository-api</module>
  </modules>
  
    <properties>
@@ -48,6 +49,11 @@
            <dependency>
                <groupId>com.jbr.daily-finance</groupId>
                <artifactId>client-repository-api</artifactId>
+               <version>${project.version}</version>
+           </dependency>
+           <dependency>
+               <groupId>com.jbr.daily-finance</groupId>
+               <artifactId>server-repository-api</artifactId>
                <version>${project.version}</version>
            </dependency>
  
