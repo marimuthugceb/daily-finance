@@ -21,10 +21,15 @@
    <modules>
        <module>client-repository-api</module>
        <module>server-repository-api</module>
+       <module>service-api</module>
+       <module>gwt-json-lib</module>
+       <module>service-gae-impl</module>
+       <module>web-client</module>
  </modules>
  
    <properties>
-       <gae.version></gae.version>
+       <gae.version>1.5.0</gae.version>
+       <gwt.version>2.2.0</gwt.version>
    </properties>
  
    <build>
@@ -54,6 +59,21 @@
            <dependency>
                <groupId>com.jbr.daily-finance</groupId>
                <artifactId>server-repository-api</artifactId>
+               <version>${project.version}</version>
+           </dependency>
+           <dependency>
+               <groupId>com.jbr.daily-finance</groupId>
+               <artifactId>service-api</artifactId>
+               <version>${project.version}</version>
+           </dependency>
+           <dependency>
+               <groupId>com.jbr.daily-finance</groupId>
+               <artifactId>gwt-json-lib</artifactId>
+               <version>${project.version}</version>
+           </dependency>
+           <dependency>
+               <groupId>com.jbr.daily-finance</groupId>
+               <artifactId>service-gae-impl</artifactId>
                <version>${project.version}</version>
            </dependency>
  

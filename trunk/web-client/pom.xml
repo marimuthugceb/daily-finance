@@ -1,0 +1,178 @@
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.jbr.daily-finance</groupId>
+    <artifactId>web-client</artifactId>
+    <packaging>war</packaging>
+    <name>daily-finance web-client</name>
+
+    <parent>
+        <groupId>com.jbr</groupId>
+        <artifactId>daily-finance</artifactId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+
+    <properties>
+        <gae.application.version>0</gae.application.version>
+
+        <!-- port defaults to 8080 -->
+        <gae.port>8080</gae.port>
+
+        <!--
+            Produce detailed JS during GWT compilation for development
+            environment
+        -->
+        <gwt.style>DETAILED</gwt.style>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.source>1.6</maven.compiler.source>
+        <maven.compiler.target>1.6</maven.compiler.target>
+
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.jbr.daily-finance</groupId>
+            <artifactId>client-repository-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.jbr.daily-finance</groupId>
+            <artifactId>server-repository-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.jbr.daily-finance</groupId>
+            <artifactId>service-gae-impl</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.jbr.daily-finance</groupId>
+            <artifactId>service-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.google.appengine</groupId>
+            <artifactId>appengine-api-1.0-sdk</artifactId>
+            <version>${gae.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.jbr.daily-finance</groupId>
+            <artifactId>gwt-json-lib</artifactId>
+        </dependency>
+
+	<!-- GWT deps -->
+        <dependency>
+            <groupId>com.google.gwt</groupId>
+            <artifactId>gwt-servlet</artifactId>
+            <version>${gwt.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.google.gwt</groupId>
+            <artifactId>gwt-user</artifactId>
+            <version>${gwt.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+	<!-- Jersey deps -->
+	<dependency>
+	  <groupId>com.sun.jersey</groupId>
+	  <artifactId>jersey-server</artifactId>
+	  <version>1.8</version>
+	</dependency>
+        <dependency>
+            <groupId>com.sun.jersey</groupId>
+            <artifactId>jersey-json</artifactId>
+            <version>1.8</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.6</source>
+                    <target>1.6</target>
+                    <encoding>${project.build.sourceEncoding}</encoding>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <configuration>
+                    <encoding>${project.build.sourceEncoding}</encoding>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>2.1-alpha-2</version>
+                <configuration>
+                    <webResources>
+                        <resource>
+                            <directory>src/main/webapp</directory>
+                            <filtering>true</filtering>
+                            <includes>
+                                <include>**/*.xml</include>
+                            </includes>
+                        </resource>
+                    </webResources>
+                </configuration>
+            </plugin>
+
+            <!--
+                The actual maven-gae-plugin. Type "mvn gae:run" to run
+                project, "mvn gae:deploy" to upload to GAE.
+            -->
+            <plugin>
+                <groupId>net.kindleit</groupId>
+                <artifactId>maven-gae-plugin</artifactId>
+                <version>0.5.9</version>
+            </plugin>
+
+            <!--
+                Upload application to the appspot automatically, during
+                release:perform
+            -->
+            <plugin>
+                <artifactId>maven-release-plugin</artifactId>
+                <configuration>
+                    <goals>gae:deploy</goals>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.0.2</version>
+                <configuration>
+                    <source>1.5</source>
+                    <target>1.5</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>gwt-maven-plugin</artifactId>
+                <version>2.2.0</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>compile</goal>
+                            <!-- <goal>generateAsync</goal> -->
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <runTarget>
+                       welcomeGWT.html
+                    </runTarget>
+                    <server>com.google.appengine.tools.development.gwt.AppEngineLauncher</server>
+                    <!-- For GWT maven plugin version 2.1 and up -->
+                    <hostedWebapp>${project.build.directory}/${project.artifactId}</hostedWebapp>
+                    <webappDirectory>${project.build.directory}/${project.artifactId}</webappDirectory>
+                    <copyWebapp>true</copyWebapp>
+                    <appEngineVersion>1.5.0</appEngineVersion>
+                </configuration>
+            </plugin>
+
+        </plugins>
+    </build>
+</project>

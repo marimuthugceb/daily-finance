@@ -1,8 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package com.jbr.dailyfinance.gae.datastore;
 
 import com.google.appengine.api.datastore.EntityNotFoundException;

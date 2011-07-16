@@ -45,7 +45,7 @@ public class TicketsUI extends Composite {
             }
 
             public boolean isLeaf(Object value) {
-                System.out.println("Is leaf of: " + value.toString());
+                System.out.println("Is leaf of: " + value);
                 return value == null ? false : true;
             }
         },null);

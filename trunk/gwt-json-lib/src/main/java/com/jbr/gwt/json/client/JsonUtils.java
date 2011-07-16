@@ -1,4 +1,4 @@
-package com.jbr.gwt.json;
+package com.jbr.gwt.json.client;
 
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArray;
@@ -70,7 +70,7 @@ public class  JsonUtils {
         void onResponseOk(String string);
     }
 
-    public interface ElementCallback<T extends JavaScriptObject, B> {
+    public interface ElementCallback<T, B> {
         void onResponseOk(T element, B backref);
     }
 

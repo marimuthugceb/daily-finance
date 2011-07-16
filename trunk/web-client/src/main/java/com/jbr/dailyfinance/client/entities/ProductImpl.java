@@ -1,12 +1,14 @@
-package com.jbr.dailyfinance.entities;
+package com.jbr.dailyfinance.client.entities;
 
+import com.google.gwt.core.client.JavaScriptObject;
+import com.google.gwt.json.client.JSONObject;
 import com.jbr.dailyfinance.api.repository.client.Product;
 
 /**
  *
  * @author jbr
  */
-public class ProductImpl extends JsonEntity<ProductImpl> implements Product {
+public class ProductImpl extends JavaScriptObject implements Product, JsonEntity<ProductImpl> {
 
     protected ProductImpl() {}
 
@@ -24,8 +26,13 @@ public class ProductImpl extends JsonEntity<ProductImpl> implements Product {
     public final native void setPrice(Double price) /*-{ this.price = price; }-*/;
 
     @Override
-    public ProductImpl toNewJsonEntity() {
+    public final ProductImpl toNewJsonEntity() {
         return this;
+    }
+
+    @Override
+    public final String toJson() {
+        return new JSONObject(this).toString();
     }
 
 }

@@ -1,21 +1,18 @@
 package com.jbr.dailyfinance.client;
 
-import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.http.client.Request;
 import com.google.gwt.http.client.RequestBuilder;
 import com.google.gwt.http.client.RequestBuilder.Method;
 import com.google.gwt.http.client.RequestCallback;
 import com.google.gwt.http.client.RequestException;
 import com.google.gwt.http.client.Response;
-import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONParser;
 import com.google.gwt.json.client.JSONValue;
-import com.jbr.dailyfinance.api.repository.client.Entity;
-import com.jbr.dailyfinance.entities.JsonEntity;
-import com.jbr.gwt.json.JsonUtils;
-import com.jbr.gwt.json.JsonUtils.ElementCallback;
-import com.jbr.gwt.json.JsonUtils.ListCallback;
-import com.jbr.gwt.json.JsonUtils.RemoveCallback;
+import com.jbr.dailyfinance.client.entities.JsonEntity;
+import com.jbr.gwt.json.client.JsonUtils;
+import com.jbr.gwt.json.client.JsonUtils.ElementCallback;
+import com.jbr.gwt.json.client.JsonUtils.ListCallback;
+import com.jbr.gwt.json.client.JsonUtils.RemoveCallback;
 import java.util.List;
 
 /**
@@ -27,6 +24,7 @@ public abstract class BasisComs<T extends JsonEntity<T>>  {
     public abstract String getGetUrl();
     public abstract String getPutUrl();
     public abstract String getDeleUrl();
+    public abstract String getJsonName();
 
     public BasisComs(Class clazz) {
         this.clazz = clazz;
@@ -56,7 +54,7 @@ public abstract class BasisComs<T extends JsonEntity<T>>  {
                     System.out.println(text);
                         try {
                             final List<T> list = JsonUtils.asListOf(
-                                    clazz, clazz.getSimpleName().toLowerCase(), text);
+                                    clazz, getJsonName(), text);
                             System.out.println("Size of list: " +   list.size());
                             callback.onResponseOk(list);
                         } catch (RequestException ex) {
@@ -82,11 +80,13 @@ public abstract class BasisComs<T extends JsonEntity<T>>  {
         try {
             builder.setHeader("Content-type", "application/json");
             Request request = builder.sendRequest(
-                    new JSONObject(newEntity).toString(), new RequestCallback() {
+                    newEntity.toJson(), new RequestCallback() {
+                @Override
                 public void onError(Request request, Throwable exception) {
                     throw new RuntimeException(exception);
                 }
 
+                @Override
                 public void onResponseReceived(Request request, Response response) {
                     if (200 == response.getStatusCode()) {
                         final String text = response.getText();
@@ -116,10 +116,12 @@ public abstract class BasisComs<T extends JsonEntity<T>>  {
         System.out.println("Deleting for URL: " + builder.getUrl());
         try {
             builder.sendRequest(null, new RequestCallback() {
+                @Override
             public void onError(Request request, Throwable exception) {
                 throw new RuntimeException(exception);
             }
 
+                @Override
             public void onResponseReceived(Request request, Response response) {
                 if (204 == response.getStatusCode()) {
                     System.out.println("Ok. Plan removed");
