@@ -1,17 +1,20 @@
-package com.jbr.dailyfinance.entities;
+package com.jbr.dailyfinance.client.entities;
 
 import com.google.gwt.core.client.JavaScriptObject;
-import com.google.gwt.json.client.JSONObject;
 
 /**
  *
  * @author jbr
  */
-public abstract class JsonEntity<J extends JavaScriptObject> extends JavaScriptObject {
-    public abstract J toNewJsonEntity();
-    
-    public abstract Long getId();
+public interface JsonEntity<J extends JsonEntity> {
 
+    J toNewJsonEntity();
+    
+    Long getId();
+
+    String toJson();
+
+    /*
     public final boolean equals(JsonEntity j) {
         System.out.println("Equals run");
         if (getId() == null)
@@ -22,4 +25,6 @@ public abstract class JsonEntity<J extends JavaScriptObject> extends JavaScriptO
     public final String asJson() {
         return new JSONObject(this).toString();
     }
+     *
+     */
 }
