@@ -1,7 +1,5 @@
 package com.jbr.dailyfinance.client.entities;
 
-import com.google.gwt.core.client.JavaScriptObject;
-
 /**
  *
  * @author jbr
