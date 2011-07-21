@@ -31,10 +31,24 @@ public class CategoryResource extends BaseEntityResource<CategorySecurable,
 
     @GET
     @Produces({"application/json", "application/xml"})
+    public List<CategoryImpl> getAll() {
+        List<CategorySecurable> all = getServiceImpl().list();
+        Collections.sort(all, new Comparator<CategorySecurable>() {
+
+            @Override
+            public int compare(CategorySecurable o1, CategorySecurable o2) {
+                return o1.getName().compareTo(o2.getName());
+            }
+        });
+        return (List)all;
+    }
+    
+    @GET
+    @Produces({"application/json", "application/xml"})
     @Path("/makeTest")
     public CategorySecurable makeACategory() {
         final CategorySecurable category = new CategoryImpl();
-        category.setName("Mælk");
+        category.setName("Mælk og mejeri");
         category.setType(Category.Type.food);
         put(category);
         return category;
@@ -86,20 +100,6 @@ public class CategoryResource extends BaseEntityResource<CategorySecurable,
         }
     }
 
-    @GET
-    @Produces({"application/json", "application/xml"})
-    @Path("/list")
-    public List<CategoryImpl> getAll() {
-        List<CategorySecurable> all = getServiceImpl().list();
-        Collections.sort(all, new Comparator<CategorySecurable>() {
-
-            @Override
-            public int compare(CategorySecurable o1, CategorySecurable o2) {
-                return o1.getName().compareTo(o2.getName());
-            }
-        });
-        return (List)all;
-    }
 
 
 }

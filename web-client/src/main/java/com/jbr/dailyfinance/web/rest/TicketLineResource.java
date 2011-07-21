@@ -31,12 +31,36 @@ public class TicketLineResource extends BaseEntityResource<TicketLineSecurable,
 
     @GET
     @Produces({"application/json", "application/xml"})
+    public List<TicketLineImpl> getAll() {
+        List<TicketLineSecurable> all = getServiceImpl().list();
+        Collections.sort(all, new Comparator<TicketLineSecurable>() {
+
+            @Override
+            public int compare(TicketLineSecurable o1, TicketLineSecurable o2) {
+                int i = o1.getTicketId().compareTo(o2.getTicketId());
+                if (i!=0)
+                    return i;
+                return o1.getId().compareTo(o2.getId());
+            }
+        });
+        return (List)all;
+    }
+
+    @GET
+    @Produces({"application/json", "application/xml"})
     @Path("makeTest")
-    public TicketLineSecurable makeATicketLine() {
-        final TicketLineSecurable ticketline = new TicketLineImpl();
+    public TicketLineSecurable makeSome() {
+        TicketLineSecurable ticketline = new TicketLineImpl();
         ticketline.setAmount(12.25d);
         ticketline.setNumber(1);
         ticketline.setProductId(1L);
+        ticketline.setTicketId(1L);
+        put(ticketline);
+
+        ticketline = new TicketLineImpl();
+        ticketline.setAmount(12.25d);
+        ticketline.setNumber(1);
+        ticketline.setProductId(2L);
         ticketline.setTicketId(1L);
         put(ticketline);
         return ticketline;
@@ -87,24 +111,4 @@ public class TicketLineResource extends BaseEntityResource<TicketLineSecurable,
             put(ticketline);
         }
     }
-
-    @GET
-    @Produces({"application/json", "application/xml"})
-    @Path("list")
-    public List<TicketLineImpl> getAll() {
-        List<TicketLineSecurable> all = getServiceImpl().list();
-        Collections.sort(all, new Comparator<TicketLineSecurable>() {
-
-            @Override
-            public int compare(TicketLineSecurable o1, TicketLineSecurable o2) {
-                int i = o1.getTicketId().compareTo(o2.getTicketId());
-                if (i!=0)
-                    return i;
-                return o1.getId().compareTo(o2.getId());
-            }
-        });
-        return (List)all;
-    }
-
-
 }

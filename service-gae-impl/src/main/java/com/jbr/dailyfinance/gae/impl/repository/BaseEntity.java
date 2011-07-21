@@ -31,6 +31,7 @@ public class BaseEntity implements Serializable, SecurableEntity, DatastoreEntit
 
     public BaseEntity(Long id, String kind) {
         entity = new Entity(KeyFactory.createKey(kind, id));
+
         this.kind = kind;
     }
 

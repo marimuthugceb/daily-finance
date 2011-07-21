@@ -1,6 +1,5 @@
 package com.jbr.dailyfinance.gae.datastore;
 
-import com.jbr.dailyfinance.api.repository.client.TicketLine;
 import com.jbr.dailyfinance.api.repository.server.TicketLineSecurable;
 import com.jbr.dailyfinance.api.service.TicketLineServices;
 import com.jbr.dailyfinance.gae.impl.repository.TicketLineImpl;
@@ -13,7 +12,7 @@ public class TicketLineServicesImpl extends BasicOperationsImpl<TicketLineSecura
         implements TicketLineServices {
 
     public TicketLineServicesImpl() {
-        super(TicketLine.class, TicketLineImpl.KIND);
+        super(TicketLineImpl.class, TicketLineImpl.KIND);
     }
 
     @Override

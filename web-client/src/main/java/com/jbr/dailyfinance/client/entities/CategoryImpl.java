@@ -23,14 +23,14 @@ public class CategoryImpl extends JavaScriptObject implements Category, JsonEnti
     public final native String getTypeRaw() /*-{ return this.type; }-*/;
     public final native void setTypeRaw(String newtype) /*-{ this.type = newtype; }-*/;
     @Override
-    public Type getType() {
+    public final Type getType() {
         if (getTypeRaw() == null)
             return null;
         return Category.Type.valueOf(getTypeRaw());
     }
 
     @Override
-    public void setType(Type mType) {
+    public final void setType(Type mType) {
         if (mType == null)
             return;
         setTypeRaw(mType.toString());

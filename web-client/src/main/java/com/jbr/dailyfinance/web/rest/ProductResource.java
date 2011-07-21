@@ -31,25 +31,32 @@ public class ProductResource extends BaseEntityResource<ProductSecurable,
 
     @GET
     @Produces({"application/json", "application/xml"})
-    @Path("/makeTest")
-    public ProductSecurable makeAProduct() {
-        final ProductSecurable product = new ProductImpl();
+    @Path("makeTest")
+    public List<ProductImpl> makeSome() {
+        ProductImpl product = new ProductImpl();
         product.setName("Mælk");
         product.setManufacturer("Arla");
         product.setPrice(5.95d);
+        product.setCategoryId(1L);
         put(product);
-        return product;
+        product = new ProductImpl();
+        product.setName("Yoghurt");
+        product.setManufacturer("Arla");
+        product.setPrice(5.95d);
+        product.setCategoryId(1L);
+        put(product);
+        return getAll();
     }
 
     @GET
     @Produces({"application/json", "application/xml"})
-    @Path("/{productId}")
+    @Path("{productId}")
     public Product getProduct(@PathParam ("productId") Long productId) {
         return get(productId);
     }
 
     @DELETE
-    @Path("/{id}")
+    @Path("{id}")
     public void removeById(@PathParam ("id") Long id) {
         delete(get(id));
     }
@@ -79,7 +86,7 @@ public class ProductResource extends BaseEntityResource<ProductSecurable,
     @POST
     @Produces({"application/json", "application/xml"})
     @Consumes({"application/json", "application/xml"})
-    @Path("/addlist")
+    @Path("addlist")
     public void addList(List<ProductImpl> products) {
         //dish.setId(null);
         for (ProductSecurable product : products) {
@@ -89,7 +96,6 @@ public class ProductResource extends BaseEntityResource<ProductSecurable,
 
     @GET
     @Produces({"application/json", "application/xml"})
-    @Path("/list")
     public List<ProductImpl> getAll() {
         List<ProductSecurable> all = getServiceImpl().list();
         Collections.sort(all, new Comparator<ProductSecurable>() {
