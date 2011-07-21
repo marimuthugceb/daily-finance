@@ -18,7 +18,8 @@ public class StoreImpl extends BaseEntity implements Serializable, StoreSecurabl
     public static final String KIND = "store";
 
     private enum p {
-        name;
+        name,
+        nameLowerCase;
     }
 
     public StoreImpl(Entity en) {
@@ -39,10 +40,23 @@ public class StoreImpl extends BaseEntity implements Serializable, StoreSecurabl
         return (String) entity.getProperty(p.name.toString());
     }
 
+    public String getNameLowerCase() {
+        return (String) entity.getProperty(p.nameLowerCase.toString());
+    }
+
+
     @Override
     public void setName(String name) {
         entity.setProperty(p.name.toString(), name);
+        entity.setProperty(p.nameLowerCase.toString(), name.toLowerCase());
     }
+
+    public StoreImpl setNameAndReturn(String name) {
+        setName(name);
+        return this;
+    }
+
+
 
 
     @Override

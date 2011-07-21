@@ -51,11 +51,11 @@ public class CategoryImpl extends BaseEntity implements CategorySecurable {
     @XmlElement
     @Override
     public Type getType() {
-        return (Type) entity.getProperty(p.type.toString());
+        return Type.valueOf((String)entity.getProperty(p.type.toString()));
     }
 
     @Override
     public void setType(Type mType) {
-        entity.setProperty(p.type.toString(), mType);
+        entity.setProperty(p.type.toString(), mType.toString());
     }
 }

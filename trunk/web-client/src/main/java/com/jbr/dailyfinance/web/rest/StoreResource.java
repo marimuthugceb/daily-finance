@@ -31,12 +31,28 @@ public class StoreResource extends BaseEntityResource<StoreSecurable,
 
     @GET
     @Produces({"application/json", "application/xml"})
+    public List<StoreImpl> getAll() {
+        List<StoreSecurable> all = getServiceImpl().list();
+        Collections.sort(all, new Comparator<StoreSecurable>() {
+
+            @Override
+            public int compare(StoreSecurable o1, StoreSecurable o2) {
+                return o1.getName().compareTo(o2.getName());
+            }
+        });
+        return (List)all;
+    }
+
+    @GET
+    @Produces({"application/json", "application/xml"})
     @Path("/makeTest")
-    public StoreSecurable makeAStore() {
-        final StoreSecurable store = new StoreImpl();
-        store.setName("Bilka Næstved");
-        put(store);
-        return store;
+    public List<StoreImpl> makeSome() {
+        put(new StoreImpl().setNameAndReturn("Bilka Næstved"));
+        put(new StoreImpl().setNameAndReturn("Rema 1000"));
+        put(new StoreImpl().setNameAndReturn("Føtex"));
+        put(new StoreImpl().setNameAndReturn("T. Hansen"));
+        
+        return getAll();
     }
 
     @GET
@@ -85,20 +101,6 @@ public class StoreResource extends BaseEntityResource<StoreSecurable,
         }
     }
 
-    @GET
-    @Produces({"application/json", "application/xml"})
-    @Path("/list")
-    public List<StoreImpl> getAll() {
-        List<StoreSecurable> all = getServiceImpl().list();
-        Collections.sort(all, new Comparator<StoreSecurable>() {
-
-            @Override
-            public int compare(StoreSecurable o1, StoreSecurable o2) {
-                return o1.getName().compareTo(o2.getName());
-            }
-        });
-        return (List)all;
-    }
 
 
 }

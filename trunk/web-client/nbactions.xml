@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<actions>
+        <action>
+            <actionName>CUSTOM-gae:run</actionName>
+            <displayName>gae:run</displayName>
+            <goals>
+                <goal>gae:run</goal>
+            </goals>
+        </action>
+    </actions>

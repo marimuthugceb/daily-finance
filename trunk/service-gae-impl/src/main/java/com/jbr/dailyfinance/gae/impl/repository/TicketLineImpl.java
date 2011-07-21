@@ -4,11 +4,17 @@ package com.jbr.dailyfinance.gae.impl.repository;
 import com.google.appengine.api.datastore.Entity;
 import com.jbr.dailyfinance.api.repository.client.TicketLine;
 import com.jbr.dailyfinance.api.repository.server.TicketLineSecurable;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
  * @author jbr
  */
+@XmlRootElement(name = "ticketline")
+@XmlAccessorType(XmlAccessType.NONE)
 public class TicketLineImpl extends BaseEntity implements TicketLine, TicketLineSecurable {
     public static final String KIND = "ticketline";
 
@@ -31,22 +37,25 @@ public class TicketLineImpl extends BaseEntity implements TicketLine, TicketLine
         super(entity);
     }
 
-
+    @XmlElement
     @Override
     public Double getAmount() {
         return (Double) entity.getProperty(p.amount.toString());
     }
 
+    @XmlElement
     @Override
     public Integer getNumber() {
-        return (Integer) entity.getProperty(p.number.toString());
+        return ((Long) entity.getProperty(p.number.toString())).intValue();
     }
 
+    @XmlElement
     @Override
     public Long getProductId() {
         return (Long) entity.getProperty(p.productId.toString());
     }
 
+    @XmlElement
     @Override
     public Long getTicketId() {
         return (Long) entity.getProperty(p.ticketId.toString());
@@ -59,7 +68,7 @@ public class TicketLineImpl extends BaseEntity implements TicketLine, TicketLine
 
     @Override
     public void setNumber(Integer mNumber) {
-        entity.setProperty(p.number.toString(), mNumber);
+        entity.setProperty(p.number.toString(), new Long(mNumber.longValue()));
     }
 
     @Override
