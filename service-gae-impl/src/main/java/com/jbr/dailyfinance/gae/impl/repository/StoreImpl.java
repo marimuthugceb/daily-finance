@@ -56,6 +56,13 @@ public class StoreImpl extends BaseEntity implements Serializable, StoreSecurabl
         return this;
     }
 
+    @Override
+    public String toString() {
+        return "StoreImpl{name:" + getName() + '}';
+    }
+
+
+
 
 
 

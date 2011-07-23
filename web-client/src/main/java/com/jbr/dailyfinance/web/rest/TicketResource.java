@@ -8,6 +8,7 @@ import com.jbr.dailyfinance.gae.datastore.StoreServicesImpl;
 import com.jbr.dailyfinance.gae.datastore.TicketServicesImpl;
 import com.jbr.dailyfinance.gae.impl.repository.StoreImpl;
 import com.jbr.dailyfinance.gae.impl.repository.TicketImpl;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -21,9 +22,6 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
@@ -92,16 +90,17 @@ public class TicketResource extends BaseEntityResource<TicketSecurable,
         return put(entity);
     }
 
-    @POST
-    @Produces({"application/json", "application/xml"})
-    @Consumes({"application/json", "application/xml"})
-    public Ticket add(TicketImpl entity) {
-        //dish.setId(null);
-        System.out.println(String.format("Adding new ticket for store %s at %s",
-                getStoreOfId(entity.getStoreId()),
-                entity.getTicketDate()));
-        return put(entity);
-    }
+//    @POST
+//    @Produces({"application/json", "application/xml"})
+//    @Consumes({"application/json", "application/xml"})
+//    public List<Ticket> add(List<TicketImpl> entity) {
+//        System.out.println(entity.toString());
+//        //dish.setId(null);
+//        //System.out.println(String.format("Adding new ticket for store %s at %s",
+//        //        getStoreOfId(entity.getStoreId()),
+//        //        entity.getTicketDate()));
+//        return put(entity);
+//    }
 
     private StoreSecurable getStoreOfId(Long id) {
         return new StoreServicesImpl().get(id);
@@ -110,12 +109,15 @@ public class TicketResource extends BaseEntityResource<TicketSecurable,
     @POST
     @Produces({"application/json", "application/xml"})
     @Consumes({"application/json", "application/xml"})
-    @Path("/addlist")
-    public void addList(List<TicketWithStore> tickets) {
-        //dish.setId(null);
+    //@Path("/addlist")
+    public List<TicketImpl> addList(List<TicketWithStore> tickets) {
+        final ArrayList<TicketImpl> returnList =
+                new ArrayList<TicketImpl>(tickets.size());
         for (TicketWithStore ticket : tickets) {
+            System.out.println(ticket);
             TicketImpl ticketImpl = new TicketImpl(ticket.getId());
             ticketImpl.setTicketDate(ticket.getTicketDate());
+            ticketImpl.setStoreId(ticket.getStoreId());
             if (ticket.getStoreName() != null) {
                 StoreServices storeServices = new StoreServicesImpl();
                 StoreSecurable store = storeServices.get(ticket.getStoreName());
@@ -123,47 +125,16 @@ public class TicketResource extends BaseEntityResource<TicketSecurable,
                     //Create store if store with given name was not allready existing.
                     StoreImpl newStore = new StoreImpl();
                     newStore.setName(ticket.getStoreName());
+                    System.out.println("Adding new store " + newStore);
                     store = storeServices.put(newStore);
                 }
                 ticketImpl.setStoreId(store.getId());
             }
-            put(ticketImpl);
+            System.out.println("Putting ticket: " + ticketImpl);
+            returnList.add((TicketImpl)put(ticketImpl));
+
         }
-    }
-
-    @XmlRootElement(name = "store")
-    @XmlAccessorType(XmlAccessType.FIELD)
-    public class TicketWithStore {
-
-        String storeName;
-        Long   id;
-        Date   ticketDate;
-
-        public Long getId() {
-            return id;
-        }
-
-        public void setId(Long id) {
-            this.id = id;
-        }
-
-        public String getStoreName() {
-            return storeName;
-        }
-
-        public void setStoreName(String storeName) {
-            this.storeName = storeName;
-        }
-
-        public Date getTicketDate() {
-            return ticketDate;
-        }
-
-        public void setTicketDate(Date ticketDate) {
-            this.ticketDate = ticketDate;
-        }
-
-
+        return returnList;
     }
 
 

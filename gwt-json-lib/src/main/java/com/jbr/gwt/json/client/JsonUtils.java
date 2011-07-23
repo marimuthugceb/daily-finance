@@ -8,6 +8,7 @@ import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONParser;
 import com.google.gwt.json.client.JSONValue;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -16,6 +17,10 @@ import java.util.List;
  */
 public class  JsonUtils {
     public final static DateTimeFormat jsonFormat = DateTimeFormat.getFormat("yyyy-MM-dd");
+
+    public static Date toDate(String isoDate) {
+        return jsonFormat.parse(isoDate.substring(0, 10));
+    }
 
     /**
     * Convert the string of JSON into JavaScript object.

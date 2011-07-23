@@ -30,7 +30,7 @@ public class TicketImpl extends JavaScriptObject implements Ticket, JsonEntity<T
     public final Date getTicketDate() {
         if (getTicketDateRaw() == null)
             return null;
-        return JsonUtils.jsonFormat.parse(getTicketDateRaw().substring(0, 10));
+        return JsonUtils.toDate(getTicketDateRaw());
     }
 
     @Override

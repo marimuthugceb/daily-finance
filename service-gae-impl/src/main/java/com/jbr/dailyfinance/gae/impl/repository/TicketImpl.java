@@ -57,4 +57,9 @@ public class TicketImpl extends BaseEntity implements Ticket, TicketSecurable {
         entity.setProperty(p.ticketDate.toString(), mTicketDate);
     }
 
+    @Override
+    public String toString() {
+        return "Ticket: {id:" + getId() + ", ticketDate:" + getTicketDate()  +  ", storeId:" + getStoreId() + "}";
+    }
+
 }
