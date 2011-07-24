@@ -21,6 +21,7 @@ public class TicketLineImpl extends BaseEntity implements TicketLine, TicketLine
     private enum p {
         number,
         productId,
+        categoryId,
         ticketId,
         amount;
     }
@@ -79,6 +80,16 @@ public class TicketLineImpl extends BaseEntity implements TicketLine, TicketLine
     @Override
     public void setTicketId(Long mTicketId) {
         entity.setProperty(p.ticketId.toString(), mTicketId);
+    }
+
+    @Override
+    public Long getCategoryId() {
+        return (Long) entity.getProperty(p.categoryId.toString());
+    }
+
+    @Override
+    public void setCategoryId(Long mCategoryId) {
+        entity.setProperty(p.categoryId.toString(), mCategoryId);
     }
 
 }
