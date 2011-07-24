@@ -1,0 +1,1 @@
+mysql -u root -p --default-character-set=utf8 -e "select distinct concat('{\"id\":\"',bonid,'\",\"storeName\":\"', butik, '\",\"ticketDate\":\"', DATE_FORMAT(dato, '%Y-%m-%d'), '\"},') json from BONNER where length(butik) > 0 order by butik" -B hushold | iconv -f latin1 > tickets.json
