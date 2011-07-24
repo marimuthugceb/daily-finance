@@ -4,6 +4,7 @@ import com.jbr.dailyfinance.api.repository.client.Category;
 import com.jbr.dailyfinance.api.repository.server.CategorySecurable;
 import com.jbr.dailyfinance.gae.datastore.CategoryServicesImpl;
 import com.jbr.dailyfinance.gae.impl.repository.CategoryImpl;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -80,24 +81,25 @@ public class CategoryResource extends BaseEntityResource<CategorySecurable,
         return put(entity);
     }
 
-    @POST
-    @Produces({"application/json", "application/xml"})
-    @Consumes({"application/json", "application/xml"})
-    public Category add(CategoryImpl entity) {
-        //dish.setId(null);
-        System.out.println(entity.getName());
-        return put(entity);
-    }
+//    @POST
+//    @Produces({"application/json", "application/xml"})
+//    @Consumes({"application/json", "application/xml"})
+//    public Category add(CategoryImpl entity) {
+//        //dish.setId(null);
+//        System.out.println(entity.getName());
+//        return put(entity);
+//    }
 
     @POST
     @Produces({"application/json", "application/xml"})
     @Consumes({"application/json", "application/xml"})
-    @Path("/addlist")
-    public void addList(List<CategoryImpl> categorys) {
+    public List<CategoryImpl> addList(List<CategoryImpl> categorys) {
         //dish.setId(null);
+        final ArrayList<CategoryImpl> l = new ArrayList<CategoryImpl>(categorys.size());
         for (CategorySecurable category : categorys) {
-            put(category);
+            l.add((CategoryImpl)put(category));
         }
+        return l;
     }
 
 

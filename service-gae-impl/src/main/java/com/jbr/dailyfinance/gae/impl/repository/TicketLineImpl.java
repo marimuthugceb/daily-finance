@@ -82,6 +82,7 @@ public class TicketLineImpl extends BaseEntity implements TicketLine, TicketLine
         entity.setProperty(p.ticketId.toString(), mTicketId);
     }
 
+    @XmlElement
     @Override
     public Long getCategoryId() {
         return (Long) entity.getProperty(p.categoryId.toString());

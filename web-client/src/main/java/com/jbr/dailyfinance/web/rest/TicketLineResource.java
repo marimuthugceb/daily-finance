@@ -4,6 +4,7 @@ import com.jbr.dailyfinance.api.repository.client.TicketLine;
 import com.jbr.dailyfinance.api.repository.server.TicketLineSecurable;
 import com.jbr.dailyfinance.gae.datastore.TicketLineServicesImpl;
 import com.jbr.dailyfinance.gae.impl.repository.TicketLineImpl;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -92,23 +93,23 @@ public class TicketLineResource extends BaseEntityResource<TicketLineSecurable,
         return put(entity);
     }
 
-    @POST
-    @Produces({"application/json", "application/xml"})
-    @Consumes({"application/json", "application/xml"})
-    public TicketLine add(TicketLineImpl entity) {
-        //dish.setId(null);
-        System.out.println("Adding ticketline");
-        return put(entity);
-    }
+//    @POST
+//    @Produces({"application/json", "application/xml"})
+//    @Consumes({"application/json", "application/xml"})
+//    public TicketLine add(TicketLineImpl entity) {
+//        //dish.setId(null);
+//        System.out.println("Adding ticketline");
+//        return put(entity);
+//    }
 
     @POST
     @Produces({"application/json", "application/xml"})
     @Consumes({"application/json", "application/xml"})
-    @Path("addlist")
-    public void addList(List<TicketLineImpl> ticketlines) {
-        //dish.setId(null);
+    public List<TicketLineImpl> addList(List<TicketLineImpl> ticketlines) {
+        ArrayList<TicketLineImpl> l = new ArrayList<TicketLineImpl>(ticketlines.size());
         for (TicketLineSecurable ticketline : ticketlines) {
-            put(ticketline);
+            l.add((TicketLineImpl)put(ticketline));
         }
+        return l;
     }
 }
