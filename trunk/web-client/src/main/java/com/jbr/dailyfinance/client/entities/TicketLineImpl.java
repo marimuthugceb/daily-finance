@@ -42,6 +42,12 @@ public class TicketLineImpl extends JavaScriptObject implements TicketLine, Json
     public final native void setTicketId(Long mTicketId) /*-{ this.ticketid = mTicketId; }-*/;
 
     @Override
+    public final native Long getCategoryId() /*-{ return this.categoryid; }-*/;
+
+    @Override
+    public final native void setCategoryId(Long mCategoryId) /*-{ this.categoryid = mCategoryId }-*/ ;
+
+    @Override
     public final TicketLineImpl toNewJsonEntity() {
         return this;
     }
@@ -50,5 +56,6 @@ public class TicketLineImpl extends JavaScriptObject implements TicketLine, Json
     public final String toJson() {
         return new JSONObject(this).toString();
     }
+
 
 }

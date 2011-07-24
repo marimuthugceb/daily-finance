@@ -90,26 +90,9 @@ public class TicketResource extends BaseEntityResource<TicketSecurable,
         return put(entity);
     }
 
-//    @POST
-//    @Produces({"application/json", "application/xml"})
-//    @Consumes({"application/json", "application/xml"})
-//    public List<Ticket> add(List<TicketImpl> entity) {
-//        System.out.println(entity.toString());
-//        //dish.setId(null);
-//        //System.out.println(String.format("Adding new ticket for store %s at %s",
-//        //        getStoreOfId(entity.getStoreId()),
-//        //        entity.getTicketDate()));
-//        return put(entity);
-//    }
-
-    private StoreSecurable getStoreOfId(Long id) {
-        return new StoreServicesImpl().get(id);
-    }
-
     @POST
     @Produces({"application/json", "application/xml"})
     @Consumes({"application/json", "application/xml"})
-    //@Path("/addlist")
     public List<TicketImpl> addList(List<TicketWithStore> tickets) {
         final ArrayList<TicketImpl> returnList =
                 new ArrayList<TicketImpl>(tickets.size());
