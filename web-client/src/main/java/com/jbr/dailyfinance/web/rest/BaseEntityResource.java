@@ -28,7 +28,11 @@ public class BaseEntityResource<E extends SecurableEntity, B extends BasicOperat
     }
 
     public List<E> list() {
-        return bo.list();
+        return bo.list(0, 10000);
+    }
+
+    public List<E> list(int startRecord, int records) {
+        return bo.list(startRecord, records);
     }
     
     public B getServiceImpl() {

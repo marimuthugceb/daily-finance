@@ -155,19 +155,19 @@
                 <executions>
                     <execution>
                         <goals>
-                            <!-- <goal>compile</goal> -->
+                            <goal>compile</goal>
                             <!-- <goal>generateAsync</goal> -->
                         </goals>
                     </execution>
                 </executions>
                 <configuration>
                     <runTarget>
-                       welcomeGWT.html
+                       main.jsp
                     </runTarget>
                     <server>com.google.appengine.tools.development.gwt.AppEngineLauncher</server>
                     <!-- For GWT maven plugin version 2.1 and up -->
                     <hostedWebapp>${project.build.directory}/${project.artifactId}</hostedWebapp>
-                    <webappDirectory>${project.build.directory}/${project.artifactId}</webappDirectory>
+                    <!-- <webappDirectory>${project.build.directory}/${project.artifactId}</webappDirectory> -->
                     <copyWebapp>true</copyWebapp>
                     <appEngineVersion>${gae.version}</appEngineVersion>
                 </configuration>

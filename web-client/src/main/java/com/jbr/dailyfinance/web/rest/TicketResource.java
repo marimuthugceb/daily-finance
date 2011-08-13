@@ -1,13 +1,18 @@
 package com.jbr.dailyfinance.web.rest;
 
+import com.google.appengine.api.datastore.DatastoreService;
 import com.jbr.dailyfinance.api.repository.client.Ticket;
+import com.jbr.dailyfinance.api.repository.client.TicketLine;
 import com.jbr.dailyfinance.api.repository.server.StoreSecurable;
+import com.jbr.dailyfinance.api.repository.server.TicketLineSecurable;
 import com.jbr.dailyfinance.api.repository.server.TicketSecurable;
 import com.jbr.dailyfinance.api.service.StoreServices;
 import com.jbr.dailyfinance.gae.datastore.StoreServicesImpl;
+import com.jbr.dailyfinance.gae.datastore.TicketLineServicesImpl;
 import com.jbr.dailyfinance.gae.datastore.TicketServicesImpl;
 import com.jbr.dailyfinance.gae.impl.repository.StoreImpl;
 import com.jbr.dailyfinance.gae.impl.repository.TicketImpl;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -31,14 +36,15 @@ import javax.ws.rs.Produces;
 public class TicketResource extends BaseEntityResource<TicketSecurable,
         TicketServicesImpl> {
 
-    public TicketResource() {
+     public TicketResource() {
         super(new TicketServicesImpl());
     }
 
     @GET
     @Produces({"application/json", "application/xml"})
-    public List<TicketImpl> getAll() {
-        List<TicketSecurable> all = getServiceImpl().list();
+    public List<TicketImpl> getAll(@PathParam("ticketDate") String ticketDate) throws ParseException {
+        List<TicketSecurable> all = getServiceImpl().getTickets(ticketDate==null?null:
+                ISODate.dateFormat().parse(ticketDate));
         Collections.sort(all, new Comparator<TicketSecurable>() {
 
             @Override
@@ -70,11 +76,22 @@ public class TicketResource extends BaseEntityResource<TicketSecurable,
     public Ticket getTicket(@PathParam ("ticketId") Long ticketId) {
         return get(ticketId);
     }
+    
+    @Path("/{ticketId}/ticketline")
+    public TicketLineResource getTicketLine(@PathParam ("ticketId") Long ticketId) {
+        return new TicketLineResource();
+    }
 
     @DELETE
     @Path("/{id}")
     public void removeById(@PathParam ("id") Long id) {
-        delete(get(id));
+        final TicketSecurable t = get(id);
+        final TicketLineServicesImpl tls = new TicketLineServicesImpl();
+
+        for (TicketLineSecurable tl : tls.list(id)) {
+            tls.delete(tl);
+        }
+        delete(t);
     }
 
     @DELETE

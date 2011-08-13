@@ -6,7 +6,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- *
+ * This is for importing old tickets with store name included
  * @author jbr
  */
 @XmlRootElement(name = "ticket")

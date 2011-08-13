@@ -15,7 +15,7 @@
         <url-pattern>/resources/store/*</url-pattern>
         <url-pattern>/resources/ticketline/*</url-pattern>
         <url-pattern>/resources/ticket/*</url-pattern>
-        <url-pattern>plan.jsp</url-pattern> 
+        <url-pattern>main.jsp</url-pattern>
         <dispatcher>REQUEST</dispatcher>
         <dispatcher>FORWARD</dispatcher>
     </filter-mapping> 
@@ -47,6 +47,6 @@
         <url-pattern>/resources/*</url-pattern>
     </servlet-mapping> 
     <welcome-file-list>
-        <welcome-file>plan.jsp</welcome-file>
+        <welcome-file>main.jsp</welcome-file>
     </welcome-file-list> 
 </web-app>
