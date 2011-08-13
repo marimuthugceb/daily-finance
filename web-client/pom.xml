@@ -57,12 +57,12 @@
         </dependency>
 
 	<!-- GWT deps -->
-        <dependency>
+        <!--<dependency>
             <groupId>com.google.gwt</groupId>
             <artifactId>gwt-servlet</artifactId>
             <version>${gwt.version}</version>
             <scope>runtime</scope>
-        </dependency>
+        </dependency> -->
         <dependency>
             <groupId>com.google.gwt</groupId>
             <artifactId>gwt-user</artifactId>
@@ -81,6 +81,20 @@
             <artifactId>jersey-json</artifactId>
             <version>1.8</version>
         </dependency>
+
+        <!-- only JAXB 2.1.12 will work on app engine servers
+             http://code.google.com/p/googleappengine/issues/detail?id=1267 
+        <dependency>
+            <groupId>javax.xml.bind</groupId>
+            <artifactId>jaxb-api</artifactId>
+            <version>2.1.12</version>
+        </dependency>-->
+        <dependency>
+            <groupId>com.sun.xml.bind</groupId>
+            <artifactId>jaxb-impl</artifactId>
+            <version>2.1.12</version>
+        </dependency>
+
     </dependencies>
 
     <build>
