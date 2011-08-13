@@ -111,7 +111,7 @@ Uncomment this for XHTML entities
                                                         <g:row>
                                                             <g:cell/>
                                                             <g:customCell>
-                                                                <g:Button enabled='true' ui:field='newButton'>Gem ny</g:Button>
+                                                                <g:Button enabled='true' ui:field='newButton'>Gem som ny</g:Button>
                                                             </g:customCell>
                                                         </g:row>
                                                         <g:row>
@@ -131,10 +131,10 @@ Uncomment this for XHTML entities
                                                     <g:Label>Indkøb på denne bon</g:Label>
                                                 </g:layer>
                                                 <g:layer top='2em' height='3em'>
-                                                    <g:FlowPanel>
+                                                    <g:HorizontalPanel spacing='4'>
                                                         <g:Label>Sum denne bon: </g:Label>
                                                         <g:Label ui:field='ticketSum'></g:Label>
-                                                    </g:FlowPanel>
+                                                    </g:HorizontalPanel>
                                                 </g:layer>
                                                 <g:layer top='5em' bottom='0px'>
                                                     <g:ScrollPanel>

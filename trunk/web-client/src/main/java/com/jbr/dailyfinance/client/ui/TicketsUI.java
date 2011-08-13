@@ -56,33 +56,35 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
  * @author jbr
  */
 public class TicketsUI extends Composite {
+    interface TicketsUIUiBinder extends UiBinder<Widget, TicketsUI> {
+    }
 
     private static TicketsUIUiBinder uiBinder = GWT.create(TicketsUIUiBinder.class);
-    private static TicketComs tc = new TicketComs();
-    private static StoreComs sc = new StoreComs();
-    private static TicketDateComs tdc = new TicketDateComs();
-    private static TicketLineComs tlc = new TicketLineComs();
-    private static CategoryComs cc = new CategoryComs();
+    private static TicketComs        tc       = new TicketComs();
+    private static StoreComs         sc       = new StoreComs();
+    private static TicketDateComs    tdc      = new TicketDateComs();
+    private static TicketLineComs    tlc      = new TicketLineComs();
+    private static CategoryComs      cc       = new CategoryComs();
 
     private List<CategoryImpl> categoryList = null;
-    private List<StoreImpl> storeList = null;
-    private Long currentTicketId;
+    private List<StoreImpl>    storeList    = null;
+    private Long               currentTicketId;
 
     @UiField(provided=true)
     CellTree ticketTree;
 
     @UiField(provided=true)
     CellTable<TicketLineImpl> ticketTable = new CellTable<TicketLineImpl>(200);;
-    final SingleSelectionModel<TicketImpl> ticketTreeSelectionModel = new SingleSelectionModel<TicketImpl>();
-    final SingleSelectionModel<TicketLineImpl> ticketLineSelectionModel = new SingleSelectionModel<TicketLineImpl>();
+    final SingleSelectionModel<TicketImpl> ticketTreeSelectionModel =
+            new SingleSelectionModel<TicketImpl>();
+    final SingleSelectionModel<TicketLineImpl> ticketLineSelectionModel =
+            new SingleSelectionModel<TicketLineImpl>();
     public static final NumberFormat CURRENCYFORMAT = NumberFormat.getCurrencyFormat();
     public static final NumberFormat DECIMALFORMAT = NumberFormat.getFormat("#0.00");
 
@@ -127,61 +129,6 @@ public class TicketsUI extends Composite {
 
     @UiField
     SplitLayoutPanel ticketDetailsPanel;
-
-    final AsyncDataProvider<TicketLineImpl> ticketLineProvider = new AsyncDataProvider<TicketLineImpl>() {
-
-        @Override
-        protected void updateRowData(HasData<TicketLineImpl> display, int start, List<TicketLineImpl> values) {
-            //updateSumOnTicket();
-            
-            super.updateRowData(display, start, values);
-        }
-
-
-
-        @Override
-        protected void onRangeChanged(HasData<TicketLineImpl> display) {
-            if (currentTicketId == null) {
-                updateRowCount(0, true);
-                return;
-            }
-            tlc.setTicketId(currentTicketId);
-            tlc.list(new ListCallback<TicketLineImpl>() {
-
-                @Override
-                public void onResponseOk(List<TicketLineImpl> ticketLineList) {
-                    int rowNum=0;
-                    for (final TicketLineImpl t : ticketLineList) {
-                        final Integer finalRowNum = rowNum;
-                        cc.setCategoryId(t.getCategoryId());
-                        cc.list(new ListCallback<CategoryImpl>() {
-
-                            @Override
-                            public void onResponseOk(List<CategoryImpl> category) {
-                                ArrayList<TicketLineImpl> singleTicketLine = new ArrayList<TicketLineImpl>(1);
-                                t.setCategoryName(category.get(0).getName());
-                                singleTicketLine.add(t);
-                                System.out.println("CategoryName sat to  " + t.getCategoryName());
-                                updateRowData(finalRowNum, singleTicketLine);
-                                updateSumOnTicket();
-                            }
-                        });
-                        rowNum++;
-                    }
-                    updateRowCount(ticketLineList.size(), true);
-                }
-            });
-        }
-    };
-
-    public void updateAmountTextBox() throws NumberFormatException {
-        System.out.println("Number changed");
-        double number = Double.parseDouble(numberTextBox.getText());
-        double price = DECIMALFORMAT.parse(picePriceTextBox.getText());
-        amountTextBox.setText(DECIMALFORMAT.format(number * price));
-    }
-    interface TicketsUIUiBinder extends UiBinder<Widget, TicketsUI> {
-    }
 
     @UiHandler("saveButton")
     public void handleSaveButton(ClickEvent e) {
@@ -283,6 +230,51 @@ public class TicketsUI extends Composite {
         submitEnter(e);
     }
 
+    final AsyncDataProvider<TicketLineImpl> ticketLineProvider =
+            new AsyncDataProvider<TicketLineImpl>() {
+        @Override
+        protected void onRangeChanged(HasData<TicketLineImpl> display) {
+            if (currentTicketId == null) {
+                updateRowCount(0, true);
+                return;
+            }
+            tlc.setTicketId(currentTicketId);
+            tlc.list(new ListCallback<TicketLineImpl>() {
+
+                @Override
+                public void onResponseOk(List<TicketLineImpl> ticketLineList) {
+                    int rowNum=0;
+                    for (final TicketLineImpl t : ticketLineList) {
+                        final Integer finalRowNum = rowNum;
+                        cc.setCategoryId(t.getCategoryId());
+                        cc.list(new ListCallback<CategoryImpl>() {
+
+                            @Override
+                            public void onResponseOk(List<CategoryImpl> category) {
+                                ArrayList<TicketLineImpl> singleTicketLine =
+                                        new ArrayList<TicketLineImpl>(1);
+                                t.setCategoryName(category.get(0).getName());
+                                singleTicketLine.add(t);
+                                System.out.println("CategoryName sat to  " + t.getCategoryName());
+                                updateRowData(finalRowNum, singleTicketLine);
+                                updateSumOnTicket();
+                            }
+                        });
+                        rowNum++;
+                    }
+                    updateRowCount(ticketLineList.size(), true);
+                }
+            });
+        }
+    };
+
+    public void updateAmountTextBox() throws NumberFormatException {
+        System.out.println("Number changed");
+        double number = Double.parseDouble(numberTextBox.getText());
+        double price = DECIMALFORMAT.parse(picePriceTextBox.getText());
+        amountTextBox.setText(DECIMALFORMAT.format(number * price));
+    }
+
     public void submitEnter(KeyUpEvent e) {
         if (e.getNativeKeyCode() == KeyCodes.KEY_ENTER) {
             if (ticketLineSelectionModel.getSelectedObject()==null)
@@ -326,7 +318,8 @@ public class TicketsUI extends Composite {
 
             @Override
             public void onSelectionChange(SelectionChangeEvent event) {
-                System.out.println("Selected ticketlineid: " + ticketLineSelectionModel.getSelectedObject().getIdRaw());
+                System.out.println("Selected ticketlineid: " +
+                        ticketLineSelectionModel.getSelectedObject().getIdRaw());
                 updateToEditForm();
             }
         });
@@ -343,7 +336,8 @@ public class TicketsUI extends Composite {
                         protected void onRangeChanged(HasData<TicketDateImpl> display) {
                             final Range range = display.getVisibleRange();
                             System.out.println("Requesting update of tree range " + range.toString());
-                            tdc.list(range.getStart(), range.getLength(), new ListCallback<TicketDateImpl>() {
+                            tdc.list(range.getStart(), range.getLength(),
+                                    new ListCallback<TicketDateImpl>() {
 
                                 @Override
                                 public void onResponseOk(List<TicketDateImpl> list) {
@@ -379,33 +373,10 @@ public class TicketsUI extends Composite {
 
                                 @Override
                                 public void onResponseOk(final List<TicketImpl> ticketList) {
-                                    int rowNum=0;
-                                    for (final TicketImpl t : ticketList) {
-                                        final Integer finalRowNum = rowNum;
-                                        System.out.println(t.toJson());
-                                        System.out.println(t.getTicketDate());
-                                        System.out.println(t.getStoreId());
-
-                                        sc.setStoreId(t.getStoreId());
-//                                        sc.list(0, 1, new ListCallback<StoreImpl>() {
-//
-//                                            @Override
-//                                            public void onResponseOk(List<StoreImpl> storeList) {
-//                                                ArrayList<TicketImpl> singleTicket = new ArrayList<TicketImpl>(1);
-//                                                System.out.println("storename:" + storeList.get(0).getName());
-//                                                t.setStoreName(storeList.get(0).getName());
-//                                                singleTicket.add(t);
-//                                                updateRowData(finalRowNum, singleTicket);
-//                                            }
-//                                        });
-//                                        rowNum++;
-                                    }
-
                                     updateRowCount(ticketList.size(), true);
                                     updateRowData(range.getStart(), ticketList);
                                 }
                             });
-
                         }
                     };
                     return new DefaultNodeInfo<TicketImpl>(provider, new AbstractCell<TicketImpl>() {
@@ -552,7 +523,7 @@ public class TicketsUI extends Composite {
             picePriceTextBox.setText(amountTextBox.getText());
             categoryListBox.setSelectedIndex(indexOf(categoryList, tl.getCategoryId()));
             saveButton.setVisible(true);
-            newButton.setVisible(false);
+            //newButton.setVisible(false);
         }
     }
 
