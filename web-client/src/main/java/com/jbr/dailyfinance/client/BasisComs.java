@@ -9,6 +9,7 @@ import com.google.gwt.http.client.RequestException;
 import com.google.gwt.http.client.Response;
 import com.google.gwt.json.client.JSONParser;
 import com.google.gwt.json.client.JSONValue;
+import com.google.gwt.user.client.Window;
 import com.jbr.gwt.json.client.JsonUtils;
 import com.jbr.gwt.json.client.JsonUtils.ElementCallback;
 import com.jbr.gwt.json.client.JsonUtils.ListCallback;
@@ -87,7 +88,7 @@ public abstract class BasisComs<T extends JavaScriptObject>  {
                     JsonUtils.toJson(newEntity), new RequestCallback() {
                 @Override
                 public void onError(Request request, Throwable exception) {
-                    throw new RuntimeException(exception);
+                    Window.alert(exception.getLocalizedMessage());
                 }
 
                 @Override
