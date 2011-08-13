@@ -1,5 +1,6 @@
 package com.jbr.dailyfinance.client;
 
+import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.http.client.Request;
 import com.google.gwt.http.client.RequestBuilder;
 import com.google.gwt.http.client.RequestBuilder.Method;
@@ -8,7 +9,6 @@ import com.google.gwt.http.client.RequestException;
 import com.google.gwt.http.client.Response;
 import com.google.gwt.json.client.JSONParser;
 import com.google.gwt.json.client.JSONValue;
-import com.jbr.dailyfinance.client.entities.JsonEntity;
 import com.jbr.gwt.json.client.JsonUtils;
 import com.jbr.gwt.json.client.JsonUtils.ElementCallback;
 import com.jbr.gwt.json.client.JsonUtils.ListCallback;
@@ -19,11 +19,9 @@ import java.util.List;
  *
  * @author jbr
  */
-public abstract class BasisComs<T extends JsonEntity<T>>  {
+public abstract class BasisComs<T extends JavaScriptObject>  {
     protected final Class clazz;
-    public abstract String getGetUrl();
-    public abstract String getPutUrl();
-    public abstract String getDeleUrl();
+    public abstract String getResourceUrl();
     public abstract String getJsonName();
 
     public BasisComs(Class clazz) {
@@ -37,8 +35,14 @@ public abstract class BasisComs<T extends JsonEntity<T>>  {
         return builder;
     }
 
+
     public void list(final ListCallback<T> callback) {
-        RequestBuilder builder = newBuilder(RequestBuilder.GET, getGetUrl());
+        list(0, 10000, callback);
+    }
+
+    public void list(int startRecord, int records, final ListCallback<T> callback) {
+        RequestBuilder builder = newBuilder(RequestBuilder.GET, getResourceUrl() +
+                "?records=" + records + "&startrecord=" + startRecord);
         System.out.println("Getting for URL: " + builder.getUrl());
         try {
             Request request = builder.sendRequest(null, new RequestCallback() {
@@ -72,15 +76,15 @@ public abstract class BasisComs<T extends JsonEntity<T>>  {
         }
     }
 
-    public void put(final Integer index, T entity, final ElementCallback<T, Integer> callback) {
+    public void put(final Integer index, JavaScriptObject entity, final ElementCallback<T, Integer> callback) {
         // Flush out all unnessesary fields from entity, simply by creating a new one
-        T newEntity = entity.toNewJsonEntity();
-        RequestBuilder builder = newBuilder(RequestBuilder.PUT, getPutUrl());
+        JavaScriptObject newEntity = entity; // = new JSONObject(entity).toString();
+        RequestBuilder builder = newBuilder(RequestBuilder.PUT, getResourceUrl());
         System.out.println("PUT to URL: " + builder.getUrl() + " content:" + newEntity.toString());
         try {
             builder.setHeader("Content-type", "application/json");
             Request request = builder.sendRequest(
-                    newEntity.toJson(), new RequestCallback() {
+                    JsonUtils.toJson(newEntity), new RequestCallback() {
                 @Override
                 public void onError(Request request, Throwable exception) {
                     throw new RuntimeException(exception);
@@ -111,8 +115,8 @@ public abstract class BasisComs<T extends JsonEntity<T>>  {
         }
     }
 
-    public void delete(T entity, final RemoveCallback callback) {
-        RequestBuilder builder = newBuilder(RequestBuilder.DELETE, getDeleUrl() + "/" + entity.getId());
+    public void delete(Long id, final RemoveCallback callback) {
+        RequestBuilder builder = newBuilder(RequestBuilder.DELETE, getResourceUrl() + "/" + id.toString());
         System.out.println("Deleting for URL: " + builder.getUrl());
         try {
             builder.sendRequest(null, new RequestCallback() {
@@ -124,7 +128,7 @@ public abstract class BasisComs<T extends JsonEntity<T>>  {
                 @Override
             public void onResponseReceived(Request request, Response response) {
                 if (204 == response.getStatusCode()) {
-                    System.out.println("Ok. Plan removed");
+                    System.out.println("Ok. Removed");
                     callback.onResponseOk();
                 } else {
                     System.out.println("Error " + response.getStatusText());

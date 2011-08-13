@@ -32,8 +32,8 @@ public class TicketLineResource extends BaseEntityResource<TicketLineSecurable,
 
     @GET
     @Produces({"application/json", "application/xml"})
-    public List<TicketLineImpl> getAll() {
-        List<TicketLineSecurable> all = getServiceImpl().list();
+    public List<TicketLineImpl> getAll(@PathParam ("ticketId") Long ticketId) {
+        List<TicketLineSecurable> all = getServiceImpl().list(ticketId);
         Collections.sort(all, new Comparator<TicketLineSecurable>() {
 
             @Override

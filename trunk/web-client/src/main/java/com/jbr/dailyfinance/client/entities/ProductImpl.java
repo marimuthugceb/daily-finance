@@ -8,7 +8,7 @@ import com.jbr.dailyfinance.api.repository.client.Product;
  *
  * @author jbr
  */
-public class ProductImpl extends JavaScriptObject implements Product, JsonEntity<ProductImpl> {
+public class ProductImpl extends JavaScriptObject implements Product {
 
     protected ProductImpl() {}
 
@@ -36,12 +36,10 @@ public class ProductImpl extends JavaScriptObject implements Product, JsonEntity
     @Override
     public final native void setPrice(Double price) /*-{ this.price = price; }-*/;
 
-    @Override
     public final ProductImpl toNewJsonEntity() {
         return this;
     }
 
-    @Override
     public final String toJson() {
         return new JSONObject(this).toString();
     }
