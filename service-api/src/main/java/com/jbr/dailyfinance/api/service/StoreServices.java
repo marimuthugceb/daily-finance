@@ -7,5 +7,7 @@ import com.jbr.dailyfinance.api.repository.server.StoreSecurable;
  * @author jbr
  */
 public interface StoreServices extends BasicOperations<StoreSecurable> {
+
+    public StoreSecurable get(String storeName);
     
 }

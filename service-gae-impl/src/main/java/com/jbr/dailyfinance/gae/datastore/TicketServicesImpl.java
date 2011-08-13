@@ -1,8 +1,11 @@
 package com.jbr.dailyfinance.gae.datastore;
 
+import com.google.appengine.api.datastore.Query;
 import com.jbr.dailyfinance.api.repository.server.TicketSecurable;
 import com.jbr.dailyfinance.api.service.TicketServices;
 import com.jbr.dailyfinance.gae.impl.repository.TicketImpl;
+import java.util.Date;
+import java.util.List;
 
 /**
  *
@@ -18,5 +21,22 @@ public class TicketServicesImpl extends BasicOperationsImpl<TicketSecurable>
     @Override
     public TicketSecurable newEntity() {
         return new TicketImpl();
+    }
+
+    @Override
+    public List<TicketSecurable> list(int startRecord, int records) {
+        System.out.println("Getting sorted list of tickets. ticketdate desc");
+        final Query q = new Query(kind);
+        q.addSort(TicketImpl.p.ticketDate.toString(), Query.SortDirection.DESCENDING);
+        return (List)SecuredDatastore.getList(clazz, q, startRecord, records);
+    }
+
+    public List<TicketSecurable> getTickets(Date ticketDate) {
+        if (ticketDate == null)
+            return super.list();
+
+        final Query q = new Query(kind);
+        q.addFilter(TicketImpl.p.ticketDate.toString(), Query.FilterOperator.EQUAL, ticketDate);
+        return (List)SecuredDatastore.getList(clazz, q, 0, 10000);
     }
 }

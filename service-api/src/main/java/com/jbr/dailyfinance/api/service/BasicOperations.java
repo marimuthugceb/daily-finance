@@ -34,5 +34,5 @@ public interface BasicOperations<E extends Entity> {
      * Retrive a list of all entities
      * @return
      */
-    List<E> list();
+    List<E> list(int startRecord, int records);
 }

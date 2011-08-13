@@ -25,6 +25,11 @@ public class StoreServicesImpl extends BasicOperationsImpl<StoreSecurable>
      */
     @Override
     public StoreSecurable put(StoreSecurable entity) {
+
+        // If id allready exists then replace name
+        if (entity.getId() != 0L && get(entity.getId()) != null) {
+            return super.put(entity);
+        }
         final StoreSecurable store = get(entity.getName());
         if (store == null)
             return super.put(entity);
@@ -44,7 +49,7 @@ public class StoreServicesImpl extends BasicOperationsImpl<StoreSecurable>
     public StoreSecurable get(String storeName) {
         final Query q = new Query(kind);
         q.addFilter("nameLowerCase", Query.FilterOperator.EQUAL, storeName.toLowerCase());
-        List<DatastoreEntity> list = SecuredDatastore.getList(clazz, q, 1);
+        List<DatastoreEntity> list = SecuredDatastore.getList(clazz, q, 0, 1);
         if (!list.isEmpty())
             return (StoreSecurable) list.get(0);
         return null;

@@ -39,12 +39,23 @@ public class  JsonUtils {
 
     public static <T extends JavaScriptObject> List<T>
             asListOf(Class<T> c, String jsonObjectName, String jsonString) throws RequestException {
+        if (jsonString.equalsIgnoreCase("null")) {
+            return new ArrayList<T>();
+        }
         JSONValue jv = JSONParser.parseStrict(jsonString);
         JSONObject o = jv.isObject();
-        if (o == null || !o.containsKey(jsonObjectName))
-            throw new RequestException("No " + jsonObjectName + " object found in return string from server");
 
         final List<T> list = new ArrayList<T>();
+        if (o == null || !o.containsKey(jsonObjectName)) {
+            if (o.isArray() == null  && o.getJavaScriptObject() != null) {
+                list.add((T) o.getJavaScriptObject());
+                return list;
+            } else {
+                throw new RequestException("No " + jsonObjectName +
+                        " object found in return string from server");
+            }
+        }
+
         final JSONValue get = o.get(jsonObjectName);
         if (get.isArray() == null)
             list.add((T) get.isObject().getJavaScriptObject());
@@ -61,6 +72,15 @@ public class  JsonUtils {
         for (int i= 0; i < jsArray.length(); i++)
             ret.add(jsArray.get(i));
         return ret;
+    }
+
+    public static String getObjectName(JavaScriptObject jso) {
+        String[] split = toJson(jso).split("\"");
+        return split[1];
+    }
+
+    public static String toJson(JavaScriptObject jso) {
+        return new JSONObject(jso).toString();
     }
 
     public interface ListCallback<T> {

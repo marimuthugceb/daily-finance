@@ -18,7 +18,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class TicketLineImpl extends BaseEntity implements TicketLine, TicketLineSecurable {
     public static final String KIND = "ticketline";
 
-    private enum p {
+    public enum p {
         number,
         productId,
         categoryId,
