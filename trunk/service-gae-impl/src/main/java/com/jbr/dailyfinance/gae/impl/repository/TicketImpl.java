@@ -3,6 +3,7 @@ package com.jbr.dailyfinance.gae.impl.repository;
 import com.google.appengine.api.datastore.Entity;
 import com.jbr.dailyfinance.api.repository.client.Ticket;
 import com.jbr.dailyfinance.api.repository.server.TicketSecurable;
+import com.jbr.dailyfinance.gae.datastore.StoreServicesImpl;
 import java.util.Date;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -18,7 +19,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class TicketImpl extends BaseEntity implements Ticket, TicketSecurable {
     public static final String KIND = "ticket";
 
-    private enum p {
+    public enum p {
         ticketDate,
         storeId;
     }
@@ -55,6 +56,15 @@ public class TicketImpl extends BaseEntity implements Ticket, TicketSecurable {
     @Override
     public void setTicketDate(Date mTicketDate) {
         entity.setProperty(p.ticketDate.toString(), mTicketDate);
+    }
+
+    @XmlElement
+    public String getStoreName() {
+        if (getStoreId() == null) {
+            return null;
+        }
+        StoreServicesImpl ssi = new StoreServicesImpl();
+        return ssi.get(getStoreId()).getName();
     }
 
     @Override

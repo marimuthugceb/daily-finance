@@ -75,12 +75,13 @@ public class SecuredDatastore  {
             throw new NotAllowedException();
     }
 
-    public static <T extends DatastoreEntity> List<T> getList(Class clazz, Query query, int rowLimit) {
+    public static <T extends DatastoreEntity> List<T> getList(Class clazz, Query query,
+            int startRow, int rowLimit) {
         if (query == null)
             throw new IllegalArgumentException("query is null");
         query.addFilter("user", FilterOperator.EQUAL, userService.getCurrentUser());
         PreparedQuery pq = datastore.prepare(query);
-        final List<Entity> asList = pq.asList(withLimit(rowLimit));
+        final List<Entity> asList = pq.asList(withOffset(startRow).limit(rowLimit));
         final List<T> toList = new ArrayList<T>(asList.size());
         for (Entity entity : asList) {
             toList.add((T) toClazz(clazz, entity));

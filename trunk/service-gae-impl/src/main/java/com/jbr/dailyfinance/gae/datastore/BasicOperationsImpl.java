@@ -46,9 +46,13 @@ public abstract class BasicOperationsImpl<E extends SecurableEntity> implements 
         }
     }
 
-    @Override
     public List<E> list() {
+        return list(0, 10000);
+    }
+
+    @Override
+    public List<E> list(int startRecord, int records) {
         return (List)SecuredDatastore.getList(clazz,
-                new Query(kind), 1000);
+                new Query(kind), startRecord, records);
     }
 }
