@@ -1,9 +1,12 @@
 package com.jbr.dailyfinance.web.rest;
 
+import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.jbr.dailyfinance.api.repository.client.TicketLine;
 import com.jbr.dailyfinance.api.repository.server.TicketLineSecurable;
+import com.jbr.dailyfinance.api.service.exceptions.NotFoundException;
 import com.jbr.dailyfinance.gae.datastore.TicketLineServicesImpl;
 import com.jbr.dailyfinance.gae.impl.repository.TicketLineImpl;
+import com.jbr.dailyfinance.web.rest.exceptions.ResourceNotFoundException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -71,7 +74,11 @@ public class TicketLineResource extends BaseEntityResource<TicketLineSecurable,
     @Produces({"application/json", "application/xml"})
     @Path("{ticketlineId}")
     public TicketLine getTicketLine(@PathParam ("ticketlineId") Long ticketlineId) {
-        return get(ticketlineId);
+        try {
+            return get(ticketlineId);
+        } catch (NotFoundException e) {
+            throw new ResourceNotFoundException(e.getMessage());
+        }
     }
 
     @DELETE

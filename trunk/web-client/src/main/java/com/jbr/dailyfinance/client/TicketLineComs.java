@@ -16,7 +16,10 @@ public class TicketLineComs extends BasisComs<TicketLineImpl> {
 
     @Override
     public String getResourceUrl() {
-        return "resources/ticket/" + ticketId.toString() + "/ticketline";
+        if (ticketId == null)
+            return "resources/ticketline";
+        else
+            return "resources/ticket/" + ticketId.toString() + "/ticketline";
     }
 
     @Override

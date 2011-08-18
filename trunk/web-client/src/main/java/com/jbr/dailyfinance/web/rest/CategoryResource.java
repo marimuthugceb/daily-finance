@@ -2,8 +2,10 @@ package com.jbr.dailyfinance.web.rest;
 
 import com.jbr.dailyfinance.api.repository.client.Category;
 import com.jbr.dailyfinance.api.repository.server.CategorySecurable;
+import com.jbr.dailyfinance.api.service.exceptions.NotFoundException;
 import com.jbr.dailyfinance.gae.datastore.CategoryServicesImpl;
 import com.jbr.dailyfinance.gae.impl.repository.CategoryImpl;
+import com.jbr.dailyfinance.web.rest.exceptions.ResourceNotFoundException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -59,13 +61,21 @@ public class CategoryResource extends BaseEntityResource<CategorySecurable,
     @Produces({"application/json", "application/xml"})
     @Path("/{categoryId}")
     public Category getCategory(@PathParam ("categoryId") Long categoryId) {
-        return get(categoryId);
+        try {
+            return get(categoryId);
+        } catch (NotFoundException e) {
+            throw new ResourceNotFoundException(e.getMessage());
+        }
     }
 
     @DELETE
     @Path("/{id}")
     public void removeById(@PathParam ("id") Long id) {
-        delete(get(id));
+        try {
+            delete(get(id));
+        } catch (NotFoundException e) {
+            throw new ResourceNotFoundException(e.getMessage());
+        }
     }
 
     @DELETE

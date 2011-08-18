@@ -2,8 +2,10 @@ package com.jbr.dailyfinance.web.rest;
 
 import com.jbr.dailyfinance.api.repository.client.Store;
 import com.jbr.dailyfinance.api.repository.server.StoreSecurable;
+import com.jbr.dailyfinance.api.service.exceptions.NotFoundException;
 import com.jbr.dailyfinance.gae.datastore.StoreServicesImpl;
 import com.jbr.dailyfinance.gae.impl.repository.StoreImpl;
+import com.jbr.dailyfinance.web.rest.exceptions.ResourceNotFoundException;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -59,19 +61,31 @@ public class StoreResource extends BaseEntityResource<StoreSecurable,
     @Produces({"application/json", "application/xml"})
     @Path("/{storeId}")
     public Store getStore(@PathParam ("storeId") Long storeId) {
-        return get(storeId);
+        try {
+            return get(storeId);
+        } catch (NotFoundException e) {
+            throw new ResourceNotFoundException(e.getMessage());
+        }
     }
 
     @DELETE
     @Path("/{id}")
     public void removeById(@PathParam ("id") Long id) {
-        delete(get(id));
+        try {
+            delete(get(id));
+        } catch (NotFoundException e) {
+            throw new ResourceNotFoundException(e.getMessage());
+        }
     }
 
     @DELETE
     @Consumes({"application/json", "application/xml"})
     public void removeDish(StoreSecurable store) {
-        removeById(store.getId());
+        try {
+            removeById(store.getId());
+        } catch (NotFoundException e) {
+            throw new ResourceNotFoundException(e.getMessage());
+        }
     }
 
     @PUT

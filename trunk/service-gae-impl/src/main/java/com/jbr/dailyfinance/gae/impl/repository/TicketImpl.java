@@ -3,6 +3,7 @@ package com.jbr.dailyfinance.gae.impl.repository;
 import com.google.appengine.api.datastore.Entity;
 import com.jbr.dailyfinance.api.repository.client.Ticket;
 import com.jbr.dailyfinance.api.repository.server.TicketSecurable;
+import com.jbr.dailyfinance.api.service.exceptions.NotFoundException;
 import com.jbr.dailyfinance.gae.datastore.StoreServicesImpl;
 import java.util.Date;
 import javax.xml.bind.annotation.XmlAccessType;
@@ -64,7 +65,11 @@ public class TicketImpl extends BaseEntity implements Ticket, TicketSecurable {
             return null;
         }
         StoreServicesImpl ssi = new StoreServicesImpl();
-        return ssi.get(getStoreId()).getName();
+        try {
+            return ssi.get(getStoreId()).getName();
+        } catch (NotFoundException e) {
+            return null;
+        }
     }
 
     @Override

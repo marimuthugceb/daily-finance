@@ -29,10 +29,61 @@ Uncomment this for XHTML entities
                 </g:west>
                 <g:center>
                     <g:SplitLayoutPanel>
-                        <g:north size='100' unit='px'>
+                        <g:north size='120' unit='px'>
                             <g:LayoutPanel >
-                                <g:layer>
-                                    <g:Label>Visning af sammentælling</g:Label>
+                                <g:layer top='2px' height='1.5em'>
+                                    <g:Label>Sammentællinger</g:Label>
+                                </g:layer>
+                                <g:layer top='2em' bottom='0px'>
+                                    <g:Grid cellPadding='1' width='300px'>
+                                        <g:row>
+                                            <g:customCell>
+                                                <g:Button ui:field='prevMonthButton'>&lt;&lt;</g:Button>
+                                            </g:customCell>
+                                            <g:customCell>
+                                                <g:Label horizontalAlignment='ALIGN_RIGHT' ui:field='month0Label'/>
+                                            </g:customCell>
+                                            <g:customCell>
+                                                <g:Label horizontalAlignment='ALIGN_RIGHT' ui:field='month1Label'/>
+                                            </g:customCell>
+                                            <g:customCell>
+                                                <g:Button ui:field='nextMonthButton'>&gt;&gt;</g:Button>
+                                            </g:customCell>
+                                         </g:row>
+                                         <g:row>
+                                            <g:customCell>
+                                                <g:Label>Mad</g:Label>
+                                            </g:customCell>
+                                            <g:customCell>
+                                                <g:Label horizontalAlignment='ALIGN_RIGHT' ui:field='food0Label'/>
+                                            </g:customCell>
+                                            <g:customCell>
+                                                <g:Label  horizontalAlignment='ALIGN_RIGHT' ui:field='food1Label'/>
+                                            </g:customCell>
+                                         </g:row>
+                                         <g:row>
+                                            <g:customCell>
+                                                <g:Label>Ikke mad</g:Label>
+                                            </g:customCell>
+                                            <g:customCell>
+                                                <g:Label horizontalAlignment='ALIGN_RIGHT' ui:field='nonfood0Label'/>
+                                            </g:customCell>
+                                            <g:customCell>
+                                                <g:Label horizontalAlignment='ALIGN_RIGHT' ui:field='nonfood1Label'/>
+                                            </g:customCell>
+                                        </g:row>
+                                         <g:row>
+                                            <g:customCell>
+                                                <g:Label>I alt</g:Label>
+                                            </g:customCell>
+                                            <g:customCell>
+                                                <g:Label horizontalAlignment='ALIGN_RIGHT' ui:field='total0Label'/>
+                                            </g:customCell>
+                                            <g:customCell>
+                                                <g:Label horizontalAlignment='ALIGN_RIGHT' ui:field='total1Label'/>
+                                            </g:customCell>
+                                        </g:row>
+                                    </g:Grid>
                                 </g:layer>
                             </g:LayoutPanel>
                         </g:north>
@@ -57,6 +108,7 @@ Uncomment this for XHTML entities
                                                 </g:customCell>
                                                 <g:customCell>
                                                     <g:HorizontalPanel spacing='4'>
+                                                        <g:Button ui:field='newStoreButton'>Ny butik</g:Button>
                                                         <g:Button ui:field='createButton'>Opret</g:Button>
                                                         <g:Button enabled='false' ui:field='saveStoreButton'>Gem dato eller butik</g:Button>
                                                         <g:Button enabled='false' ui:field='newTicketButton'>Ny bon</g:Button>
@@ -81,7 +133,10 @@ Uncomment this for XHTML entities
                                                                 <g:Label>Varekategori</g:Label>
                                                             </g:customCell>
                                                             <g:customCell>
-                                                                <g:ListBox ui:field='categoryListBox'/>
+                                                                <g:FlowPanel>
+                                                                    <g:ListBox ui:field='categoryListBox'/>
+                                                                    <g:Button ui:field='newCategoryButton'>Ny</g:Button>
+                                                                </g:FlowPanel>
                                                             </g:customCell>
                                                         </g:row>
                                                         <g:row>
@@ -150,19 +205,47 @@ Uncomment this for XHTML entities
                     </g:SplitLayoutPanel>
                 </g:center>
             </g:SplitLayoutPanel>
-                
+
         </g:tab>
-        <g:tab>
+        <g:tab visible='false'>
             <g:header size='7'>
                     Se summer
             </g:header>
-            <g:Label>able</g:Label>
+            <c:CellTable width='100%' ui:field='sumTable'/>
         </g:tab>
-        <g:tab>
+        <g:tab visible='false'>
             <g:header size='7'>
                     Opsætning af varer mm.
             </g:header>
             <g:Label>able</g:Label>
         </g:tab>
+        <g:tab visible='false'>
+            <g:header size='7'>
+                    Import/export
+            </g:header>
+            <g:LayoutPanel>
+                <g:layer top='2px' height='1.5em'>
+                    <g:HorizontalPanel>
+                        <g:Label>Data tabel</g:Label>
+                        <g:ListBox ui:field='kindListBox'/>
+                    </g:HorizontalPanel>
+                </g:layer>
+                <g:layer top='3em' height='1.5em'>
+                    <g:HorizontalPanel spacing='4'>
+                        <g:Label>Antal rækker</g:Label>
+                        <g:Label ui:field='rowsLabel'/>
+                    </g:HorizontalPanel>
+                </g:layer>
+                <g:layer top='5em' bottom='2em'>
+                    <g:ScrollPanel>
+                        <g:TextArea ui:field='dataTextBox'/>
+                    </g:ScrollPanel>
+                </g:layer>
+                <g:layer height='2em' bottom='0px'>
+                    <g:Button ui:field='importButton'>Importer</g:Button>
+                </g:layer>
+            </g:LayoutPanel>
+        </g:tab>
+
     </g:TabLayoutPanel>
 </ui:UiBinder>

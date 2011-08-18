@@ -1,17 +1,17 @@
 package com.jbr.dailyfinance.web.rest;
 
-import com.google.appengine.api.datastore.DatastoreService;
 import com.jbr.dailyfinance.api.repository.client.Ticket;
-import com.jbr.dailyfinance.api.repository.client.TicketLine;
 import com.jbr.dailyfinance.api.repository.server.StoreSecurable;
 import com.jbr.dailyfinance.api.repository.server.TicketLineSecurable;
 import com.jbr.dailyfinance.api.repository.server.TicketSecurable;
 import com.jbr.dailyfinance.api.service.StoreServices;
+import com.jbr.dailyfinance.api.service.exceptions.NotFoundException;
 import com.jbr.dailyfinance.gae.datastore.StoreServicesImpl;
 import com.jbr.dailyfinance.gae.datastore.TicketLineServicesImpl;
 import com.jbr.dailyfinance.gae.datastore.TicketServicesImpl;
 import com.jbr.dailyfinance.gae.impl.repository.StoreImpl;
 import com.jbr.dailyfinance.gae.impl.repository.TicketImpl;
+import com.jbr.dailyfinance.web.rest.exceptions.ResourceNotFoundException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -74,7 +74,11 @@ public class TicketResource extends BaseEntityResource<TicketSecurable,
     @Produces({"application/json", "application/xml"})
     @Path("/{ticketId}")
     public Ticket getTicket(@PathParam ("ticketId") Long ticketId) {
-        return get(ticketId);
+        try {
+            return get(ticketId);
+        } catch (NotFoundException e) {
+            throw new ResourceNotFoundException(e.getMessage());
+        }
     }
     
     @Path("/{ticketId}/ticketline")
