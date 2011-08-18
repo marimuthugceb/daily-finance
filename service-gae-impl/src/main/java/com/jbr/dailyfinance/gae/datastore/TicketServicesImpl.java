@@ -39,4 +39,20 @@ public class TicketServicesImpl extends BasicOperationsImpl<TicketSecurable>
         q.addFilter(TicketImpl.p.ticketDate.toString(), Query.FilterOperator.EQUAL, ticketDate);
         return (List)SecuredDatastore.getList(clazz, q, 0, 10000);
     }
+
+    public List<TicketSecurable> getTickets(Date startDate, Date endDate) {
+        if (startDate == null || endDate == null)
+            throw new IllegalArgumentException("startDate or endDate is null");
+
+        Query qTickets = new Query(kind);
+
+        qTickets.addFilter(TicketImpl.p.ticketDate.toString(),
+                Query.FilterOperator.GREATER_THAN_OR_EQUAL, startDate);
+
+        qTickets.addFilter(TicketImpl.p.ticketDate.toString(),
+                Query.FilterOperator.LESS_THAN, endDate);
+
+        return (List)SecuredDatastore.getList(clazz, qTickets, 0, 10000);
+
+    }
 }

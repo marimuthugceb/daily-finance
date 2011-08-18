@@ -12,6 +12,8 @@ import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyUpEvent;
+import com.google.gwt.http.client.RequestException;
+import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -27,8 +29,10 @@ import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.SplitLayoutPanel;
+import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.datepicker.client.CalendarUtil;
 import com.google.gwt.user.datepicker.client.DateBox;
 import com.google.gwt.view.client.AsyncDataProvider;
 import com.google.gwt.view.client.HasData;
@@ -39,14 +43,18 @@ import com.google.gwt.view.client.SelectionModel;
 import com.google.gwt.view.client.SingleSelectionModel;
 import com.google.gwt.view.client.TreeViewModel;
 import com.google.gwt.view.client.TreeViewModel.DefaultNodeInfo;
+import com.jbr.dailyfinance.api.repository.client.Category;
+import com.jbr.dailyfinance.api.repository.client.Category.Type;
 import com.jbr.dailyfinance.client.CategoryComs;
 import com.jbr.dailyfinance.client.HumanDate;
 import com.jbr.dailyfinance.client.StoreComs;
+import com.jbr.dailyfinance.client.SumComs;
 import com.jbr.dailyfinance.client.TicketComs;
 import com.jbr.dailyfinance.client.TicketDateComs;
 import com.jbr.dailyfinance.client.TicketLineComs;
 import com.jbr.dailyfinance.client.entities.CategoryImpl;
 import com.jbr.dailyfinance.client.entities.StoreImpl;
+import com.jbr.dailyfinance.client.entities.SumCategoryTypeImpl;
 import com.jbr.dailyfinance.client.entities.TicketDateImpl;
 import com.jbr.dailyfinance.client.entities.TicketImpl;
 import com.jbr.dailyfinance.client.entities.TicketLineImpl;
@@ -71,22 +79,27 @@ public class TicketsUI extends Composite {
     private static TicketDateComs    tdc      = new TicketDateComs();
     private static TicketLineComs    tlc      = new TicketLineComs();
     private static CategoryComs      cc       = new CategoryComs();
+    private static SumComs           sumc     = new SumComs();
 
-    private List<CategoryImpl> categoryList = null;
+    private List<CategoryImpl> categoryList = new ArrayList<CategoryImpl>();
     private List<StoreImpl>    storeList    = null;
     private Long               currentTicketId;
+    private Date               currentMonth = new Date();
 
     @UiField(provided=true)
     CellTree ticketTree;
 
     @UiField(provided=true)
     CellTable<TicketLineImpl> ticketTable = new CellTable<TicketLineImpl>(200);;
+
     final SingleSelectionModel<TicketImpl> ticketTreeSelectionModel =
             new SingleSelectionModel<TicketImpl>();
     final SingleSelectionModel<TicketLineImpl> ticketLineSelectionModel =
             new SingleSelectionModel<TicketLineImpl>();
+    List<TicketLineImpl> importTicketLinesList;
     public static final NumberFormat CURRENCYFORMAT = NumberFormat.getCurrencyFormat();
     public static final NumberFormat DECIMALFORMAT = NumberFormat.getFormat("#0.00");
+    public static final DateTimeFormat MONTHFORMAT = DateTimeFormat.getFormat("MMMM yyyy");
 
     @UiField
     Label ticketSum = new Label();
@@ -107,6 +120,9 @@ public class TicketsUI extends Composite {
     Button saveButton;
 
     @UiField
+    Button newStoreButton;
+    
+    @UiField
     Button newButton;
 
     @UiField
@@ -122,6 +138,9 @@ public class TicketsUI extends Composite {
     Button deleteTicketButton;
 
     @UiField
+    Button newCategoryButton;
+
+    @UiField
     DateBox ticketDateBox;
 
     @UiField
@@ -129,6 +148,52 @@ public class TicketsUI extends Composite {
 
     @UiField
     SplitLayoutPanel ticketDetailsPanel;
+
+    @UiField
+    ListBox kindListBox;
+
+    @UiField
+    TextArea dataTextBox;
+
+    @UiField
+    Label rowsLabel;
+
+    @UiField
+    Label food0Label;
+
+    @UiField
+    Label nonfood0Label;
+
+    @UiField
+    Label food1Label;
+
+    @UiField
+    Label nonfood1Label;
+
+    @UiField
+    Label month0Label;
+
+    @UiField
+    Label month1Label;
+
+    @UiField
+    Label total0Label;
+
+    @UiField
+    Label total1Label;
+
+    @UiField
+    Button prevMonthButton;
+
+    @UiField
+    Button nextMonthButton;
+
+
+    @UiHandler("importButton")
+    public void handleImportButton(ClickEvent e) {
+        System.out.println("Import Button pressed");
+        importTicketLines(0);
+    }
 
     @UiHandler("saveButton")
     public void handleSaveButton(ClickEvent e) {
@@ -144,6 +209,49 @@ public class TicketsUI extends Composite {
         updateFromEditForm((TicketLineImpl)TicketLineImpl.createObject(),
                         ticketTable.getVisibleItems().size());
         categoryListBox.setFocus(true);
+    }
+
+    @UiHandler("newStoreButton")
+    public void handleNewStoreButton(ClickEvent e) {
+        String name = Window.prompt("Navn på ny butik", "");
+        if (name == null)
+            return;
+        StoreImpl store = (StoreImpl)StoreImpl.createObject();
+        store.setName(name);
+        sc.put(storeList.size(), store, new JsonUtils.ElementCallback<StoreImpl, Integer>() {
+
+            @Override
+            public void onResponseOk(StoreImpl element, Integer backref) {
+                storeList.add(element);
+                updateStoreListBox();
+                storeListBox.setSelectedIndex(indexOf(storeList, element.getId()));
+            }
+        });
+    }
+
+    @UiHandler("newCategoryButton")
+    public void handleNewCategoryButton(ClickEvent e) {
+        String name = Window.prompt("Navn på ny varekategori", "");
+        if (name == null)
+            return;
+        CategoryImpl category = (CategoryImpl)CategoryImpl.createObject();
+        category.setName(name);
+        String type = Window.prompt("Angiv M for mad, eller ikke noget for ikke mad", "");
+        if (type == null)
+            return;
+
+        category.setType(type.equalsIgnoreCase("m") ? Type.food : Type.nonFood);
+        cc.setCategoryId(null);
+        cc.put(categoryList.size(), category, new JsonUtils.ElementCallback<CategoryImpl, Integer>() {
+
+            @Override
+            public void onResponseOk(CategoryImpl element, Integer backref) {
+                categoryList.add(element);
+                updateCategoryListBox();
+                categoryListBox.setSelectedIndex(indexOf(categoryList, element.getId()));
+                picePriceTextBox.setFocus(true);
+            }
+        });
     }
 
     @UiHandler("createButton")
@@ -228,6 +336,16 @@ public class TicketsUI extends Composite {
     @UiHandler("amountTextBox")
     public void handleAmountKeyPress(KeyUpEvent e) {
         submitEnter(e);
+    }
+
+    @UiHandler("prevMonthButton")
+    public void handlePrevMonthButton(ClickEvent e) {
+        updateSumMonths(-1);
+    }
+
+    @UiHandler("nextMonthButton")
+    public void handleNextMonthButton(ClickEvent e) {
+        updateSumMonths(1);
     }
 
     final AsyncDataProvider<TicketLineImpl> ticketLineProvider =
@@ -491,6 +609,10 @@ public class TicketsUI extends Composite {
         initWidget(uiBinder.createAndBindUi(this));
         ticketDateBox.setFormat(new DateBox.DefaultFormat(HumanDate.getFormat()));
         ticketDateBox.setValue(new Date());
+        kindListBox.addItem("ticketline");
+        updateSumMonths(0);
+        //nonfood0Label.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_RIGHT);
+
     }
 
     private void updateCategoryListBox() {
@@ -513,7 +635,6 @@ public class TicketsUI extends Composite {
 
     private void updateToEditForm() {
         final TicketLineImpl tl  = ticketLineSelectionModel.getSelectedObject();
-        Window.alert("tl=" + tl);
         if (tl == null) {
             saveButton.setVisible(false);
             newButton.setVisible(true);
@@ -590,6 +711,78 @@ public class TicketsUI extends Composite {
             sum = sum + t.getAmount().doubleValue();
         }
         ticketSum.setText(CURRENCYFORMAT.format(sum));
+        updateSumMonths(0);
+    }
+
+    private void importTicketLines(int rowNum) {
+        String json = dataTextBox.getText();
+
+        if (rowNum == 0) {
+            try {
+                importTicketLinesList = JsonUtils.asListOf(TicketLineImpl.class, "ticketline", json);
+            } catch (RequestException ex) {
+                Window.alert(ex.getLocalizedMessage());
+                return;
+            }
+
+        }
+        if (rowNum >= importTicketLinesList.size()) {
+            rowsLabel.setText("Done!");
+            return;
+        }
+        rowsLabel.setText(new Integer(rowNum).toString() + " af " + 
+                new Integer(importTicketLinesList.size()).toString());
+
+        tlc.put(rowNum, importTicketLinesList.get(rowNum),
+                new JsonUtils.ElementCallback<TicketLineImpl, Integer>() {
+
+            @Override
+            public void onResponseOk(TicketLineImpl element, Integer backref) {
+                importTicketLines(backref + 1);
+            }
+        });
+    }
+
+    public void updateSumMonths(Integer monthAdd) {
+        CalendarUtil.addMonthsToDate(currentMonth, monthAdd-1);
+        sumc.setMonth(currentMonth);
+        month0Label.setText(MONTHFORMAT.format(currentMonth));
+        food0Label.setText("(vent)");
+        nonfood0Label.setText("(vent)");
+        food1Label.setText("(vent)");
+        nonfood1Label.setText("(vent)");
+        sumc.list(0, 2, new ListCallback<SumCategoryTypeImpl>() {
+
+            @Override
+            public void onResponseOk(List<SumCategoryTypeImpl> list) {
+                if (list.get(0).getCategoryType() == Category.Type.food) {
+                    food0Label.setText(DECIMALFORMAT.format(list.get(0).getSum()));
+                    nonfood0Label.setText(DECIMALFORMAT.format(list.get(1).getSum()));
+                } else {
+                    food0Label.setText(DECIMALFORMAT.format(list.get(1).getSum()));
+                    nonfood0Label.setText(DECIMALFORMAT.format(list.get(0).getSum()));
+                }
+                total0Label.setText(DECIMALFORMAT.format(list.get(0).getSum() + list.get(1).getSum()));
+            }
+        });
+        CalendarUtil.addMonthsToDate(currentMonth, 1);
+        sumc.setMonth(currentMonth);
+        month1Label.setText(MONTHFORMAT.format(currentMonth));
+        sumc.list(0, 2, new ListCallback<SumCategoryTypeImpl>() {
+
+            @Override
+            public void onResponseOk(List<SumCategoryTypeImpl> list) {
+                if (list.get(0).getCategoryType() == Category.Type.food) {
+                    food1Label.setText(DECIMALFORMAT.format(list.get(0).getSum()));
+                    nonfood1Label.setText(DECIMALFORMAT.format(list.get(1).getSum()));
+                } else {
+                    food1Label.setText(DECIMALFORMAT.format(list.get(1).getSum()));
+                    nonfood1Label.setText(DECIMALFORMAT.format(list.get(0).getSum()));
+                }
+                total1Label.setText(DECIMALFORMAT.format(list.get(0).getSum() + list.get(1).getSum()));
+            }
+        });
+
     }
 
     public void ticketDetailsVisible(boolean visible) {

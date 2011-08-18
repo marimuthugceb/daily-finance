@@ -2,8 +2,10 @@ package com.jbr.dailyfinance.web.rest;
 
 import com.jbr.dailyfinance.api.repository.client.Product;
 import com.jbr.dailyfinance.api.repository.server.ProductSecurable;
+import com.jbr.dailyfinance.api.service.exceptions.NotFoundException;
 import com.jbr.dailyfinance.gae.datastore.ProductServicesImpl;
 import com.jbr.dailyfinance.gae.impl.repository.ProductImpl;
+import com.jbr.dailyfinance.web.rest.exceptions.ResourceNotFoundException;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -52,13 +54,21 @@ public class ProductResource extends BaseEntityResource<ProductSecurable,
     @Produces({"application/json", "application/xml"})
     @Path("{productId}")
     public Product getProduct(@PathParam ("productId") Long productId) {
-        return get(productId);
+        try {
+            return get(productId);
+        } catch (NotFoundException e) {
+            throw new ResourceNotFoundException(e.getMessage());
+        }
     }
 
     @DELETE
     @Path("{id}")
     public void removeById(@PathParam ("id") Long id) {
-        delete(get(id));
+        try {
+            delete(get(id));
+        } catch (NotFoundException e) {
+            throw new ResourceNotFoundException(e.getMessage());
+        }
     }
 
     @DELETE

@@ -15,6 +15,7 @@
         <url-pattern>/resources/store/*</url-pattern>
         <url-pattern>/resources/ticketline/*</url-pattern>
         <url-pattern>/resources/ticket/*</url-pattern>
+        <url-pattern>/resources/sum/*</url-pattern>
         <url-pattern>main.jsp</url-pattern>
         <dispatcher>REQUEST</dispatcher>
         <dispatcher>FORWARD</dispatcher>
@@ -30,6 +31,7 @@
         <url-pattern>/resources/store/*</url-pattern>
         <url-pattern>/resources/ticketline/*</url-pattern>
         <url-pattern>/resources/ticket/*</url-pattern>
+        <url-pattern>/resources/sum/*</url-pattern>
         <dispatcher>REQUEST</dispatcher>
         <dispatcher>FORWARD</dispatcher>
     </filter-mapping>
