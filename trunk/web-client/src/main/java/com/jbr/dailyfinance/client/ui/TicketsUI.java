@@ -12,7 +12,8 @@ import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyUpEvent;
-import com.google.gwt.http.client.RequestException;
+import com.google.gwt.event.logical.shared.SelectionEvent;
+import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
@@ -22,14 +23,17 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.cellview.client.CellTable;
 import com.google.gwt.user.cellview.client.CellTree;
 import com.google.gwt.user.cellview.client.Column;
+import com.google.gwt.user.cellview.client.Header;
+import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
+import com.google.gwt.user.client.ui.MenuBar;
 import com.google.gwt.user.client.ui.SplitLayoutPanel;
-import com.google.gwt.user.client.ui.TextArea;
+import com.google.gwt.user.client.ui.TabLayoutPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.datepicker.client.CalendarUtil;
@@ -47,13 +51,17 @@ import com.jbr.dailyfinance.api.repository.client.Category;
 import com.jbr.dailyfinance.api.repository.client.Category.Type;
 import com.jbr.dailyfinance.client.CategoryComs;
 import com.jbr.dailyfinance.client.HumanDate;
+import com.jbr.dailyfinance.client.HumanMonthDate;
 import com.jbr.dailyfinance.client.StoreComs;
+import com.jbr.dailyfinance.client.SumCategoryComs;
 import com.jbr.dailyfinance.client.SumComs;
 import com.jbr.dailyfinance.client.TicketComs;
 import com.jbr.dailyfinance.client.TicketDateComs;
 import com.jbr.dailyfinance.client.TicketLineComs;
 import com.jbr.dailyfinance.client.entities.CategoryImpl;
 import com.jbr.dailyfinance.client.entities.StoreImpl;
+import com.jbr.dailyfinance.client.entities.Sum12Month;
+import com.jbr.dailyfinance.client.entities.SumCategoryImpl;
 import com.jbr.dailyfinance.client.entities.SumCategoryTypeImpl;
 import com.jbr.dailyfinance.client.entities.TicketDateImpl;
 import com.jbr.dailyfinance.client.entities.TicketImpl;
@@ -62,14 +70,18 @@ import com.jbr.gwt.json.client.JsonUtils;
 import com.jbr.gwt.json.client.JsonUtils.ListCallback;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  *
  * @author jbr
  */
 public class TicketsUI extends Composite {
+
     interface TicketsUIUiBinder extends UiBinder<Widget, TicketsUI> {
     }
 
@@ -80,17 +92,22 @@ public class TicketsUI extends Composite {
     private static TicketLineComs    tlc      = new TicketLineComs();
     private static CategoryComs      cc       = new CategoryComs();
     private static SumComs           sumc     = new SumComs();
+    private static SumCategoryComs   sumcc    = new SumCategoryComs();
 
     private List<CategoryImpl> categoryList = new ArrayList<CategoryImpl>();
     private List<StoreImpl>    storeList    = null;
     private Long               currentTicketId;
     private Date               currentMonth = new Date();
+    private Date               currentSum12MonthStartDate = firstInMonth(addMonths(new Date(), -11));
 
     @UiField(provided=true)
     CellTree ticketTree;
 
     @UiField(provided=true)
     CellTable<TicketLineImpl> ticketTable = new CellTable<TicketLineImpl>(200);;
+
+    @UiField(provided=true)
+    CellTable<Sum12Month> sumTable = new CellTable<Sum12Month>(200);;
 
     final SingleSelectionModel<TicketImpl> ticketTreeSelectionModel =
             new SingleSelectionModel<TicketImpl>();
@@ -149,14 +166,14 @@ public class TicketsUI extends Composite {
     @UiField
     SplitLayoutPanel ticketDetailsPanel;
 
-    @UiField
-    ListBox kindListBox;
+//    @UiField
+//    ListBox kindListBox;
 
-    @UiField
-    TextArea dataTextBox;
+//    @UiField
+//    TextArea dataTextBox;
 
-    @UiField
-    Label rowsLabel;
+//    @UiField
+//    Label rowsLabel;
 
     @UiField
     Label food0Label;
@@ -188,12 +205,17 @@ public class TicketsUI extends Composite {
     @UiField
     Button nextMonthButton;
 
+    @UiField
+    TabLayoutPanel tabLayout;
 
-    @UiHandler("importButton")
-    public void handleImportButton(ClickEvent e) {
-        System.out.println("Import Button pressed");
-        importTicketLines(0);
-    }
+    @UiField
+    MenuBar sumMenuBar;
+
+//    @UiHandler("importButton")
+//    public void handleImportButton(ClickEvent e) {
+//        System.out.println("Import Button pressed");
+//        importTicketLines(0);
+//    }
 
     @UiHandler("saveButton")
     public void handleSaveButton(ClickEvent e) {
@@ -386,6 +408,69 @@ public class TicketsUI extends Composite {
         }
     };
 
+    final AsyncDataProvider<Sum12Month> sum12MonthProvider =
+            new AsyncDataProvider<Sum12Month>() {
+        @Override
+        protected void onRangeChanged(HasData<Sum12Month> display) {
+            sumcc.setStartDate(currentSum12MonthStartDate);
+            sumcc.setEndDate(addMonths(currentSum12MonthStartDate,12));
+            sumcc.list(new ListCallback<SumCategoryImpl>() {
+
+                @Override
+                public void onResponseOk(List<SumCategoryImpl> list) {
+                    Map<Long, List<SumCategoryImpl>> map = toMap(list);
+                    ArrayList<Sum12Month> sumList =
+                            new ArrayList<Sum12Month>(categoryList.size());
+
+                    for (CategoryImpl category : categoryList) {
+                        List<SumCategoryImpl> sumCategories = map.get(category.getId());
+                        if (sumCategories == null || sumCategories.isEmpty()) {
+                            sumList.add(new Sum12Month(
+                                    category.getName(), category.getId(), new double[12]));
+                            System.out.println("Adding " + category.getName());
+                            continue;
+                        }
+
+                        double sums[] = new double[12];
+                        for (int i= 0; i < sums.length; i++) {
+                            Date month = addMonths(currentSum12MonthStartDate, i);
+                            for (SumCategoryImpl sumCategoryImpl : sumCategories) {
+                                if (month.equals(sumCategoryImpl.getSumDate())) {
+                                    sums[i] = sumCategoryImpl.getSum();
+                                }
+                            }
+                        }
+                        sumList.add(new Sum12Month(
+                                category.getName(),
+                                category.getId(), sums));
+
+                    }
+                    System.out.println("Updating sumList " + sumList);
+                    Collections.sort(sumList);
+                    updateRowData(0, sumList);
+                    updateRowCount(sumList.size(), true);
+                    
+                }
+
+                private Map<Long, List<SumCategoryImpl>> toMap(List<SumCategoryImpl> list) {
+                    HashMap<Long, List<SumCategoryImpl>> map =
+                            new HashMap<Long, List<SumCategoryImpl>>();
+                    for (SumCategoryImpl sc : list) {
+                        List<SumCategoryImpl> get =
+                                map.get(sc.getCategoryId().longValue());
+                        if (get==null) {
+                            get = new ArrayList<SumCategoryImpl>();
+                        }
+                        get.add(sc);
+                        map.put(sc.getCategoryId().longValue(), get);
+                    }
+                    System.out.println("Map keys: " + map.keySet());
+                    return map;
+                }
+            });
+        }
+    };
+
     public void updateAmountTextBox() throws NumberFormatException {
         System.out.println("Number changed");
         double number = Double.parseDouble(numberTextBox.getText());
@@ -400,7 +485,6 @@ public class TicketsUI extends Composite {
             else
                 handleSaveButton(null);
         }
-
     }
 
     private void updateTicketHeader(TicketImpl t) {
@@ -587,6 +671,7 @@ public class TicketsUI extends Composite {
         ticketLineProvider.addDataDisplay(ticketTable);
         ticketTable.setSelectionModel(ticketLineSelectionModel);
 
+
         cc.list(new ListCallback<CategoryImpl>() {
 
             @Override
@@ -606,12 +691,67 @@ public class TicketsUI extends Composite {
             }
         });
 
+        setupSumTable();
+        //sum12MonthProvider.addDataDisplay(sumTable);
+
+
         initWidget(uiBinder.createAndBindUi(this));
         ticketDateBox.setFormat(new DateBox.DefaultFormat(HumanDate.getFormat()));
         ticketDateBox.setValue(new Date());
-        kindListBox.addItem("ticketline");
+//        kindListBox.addItem("ticketline");
         updateSumMonths(0);
         //nonfood0Label.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_RIGHT);
+        tabLayout.addSelectionHandler(new SelectionHandler<Integer>() {
+
+            @Override
+            public void onSelection(SelectionEvent<Integer> event) {
+                if (event.getSelectedItem() == 1) {
+                    System.out.println("Adding provider to sumTable");
+                    sum12MonthProvider.addDataDisplay(sumTable);
+                }
+            }
+        });
+        sumMenuBar.addItem("<<", new Command() {
+
+            @Override
+            public void execute() {
+                currentSum12MonthStartDate = addMonths(currentSum12MonthStartDate, -12);
+                sumTable.setVisibleRangeAndClearData(sumTable.getVisibleRange(), true);
+                System.out.println("Updating sumtable to start with " +
+                        currentSum12MonthStartDate);
+
+            }
+        });
+        sumMenuBar.addItem("<", new Command() {
+
+            @Override
+            public void execute() {
+                currentSum12MonthStartDate = addMonths(currentSum12MonthStartDate, -1);
+                sumTable.setVisibleRangeAndClearData(sumTable.getVisibleRange(), true);
+                System.out.println("Updating sumtable to start with " +
+                        currentSum12MonthStartDate);
+            }
+        });
+        sumMenuBar.addItem(">", new Command() {
+
+            @Override
+            public void execute() {
+                currentSum12MonthStartDate = addMonths(currentSum12MonthStartDate, 1);
+                sumTable.setVisibleRangeAndClearData(sumTable.getVisibleRange(), true);
+                System.out.println("Updating sumtable to start with " +
+                        currentSum12MonthStartDate);
+            }
+        });
+        sumMenuBar.addItem(">>", new Command() {
+
+            @Override
+            public void execute() {
+                currentSum12MonthStartDate = addMonths(currentSum12MonthStartDate, 12);
+                sumTable.setVisibleRangeAndClearData(sumTable.getVisibleRange(), true);
+                System.out.println("Updating sumtable to start with " +
+                        currentSum12MonthStartDate);
+            }
+        });
 
     }
 
@@ -714,34 +854,34 @@ public class TicketsUI extends Composite {
         updateSumMonths(0);
     }
 
-    private void importTicketLines(int rowNum) {
-        String json = dataTextBox.getText();
-
-        if (rowNum == 0) {
-            try {
-                importTicketLinesList = JsonUtils.asListOf(TicketLineImpl.class, "ticketline", json);
-            } catch (RequestException ex) {
-                Window.alert(ex.getLocalizedMessage());
-                return;
-            }
-
-        }
-        if (rowNum >= importTicketLinesList.size()) {
-            rowsLabel.setText("Done!");
-            return;
-        }
-        rowsLabel.setText(new Integer(rowNum).toString() + " af " + 
-                new Integer(importTicketLinesList.size()).toString());
-
-        tlc.put(rowNum, importTicketLinesList.get(rowNum),
-                new JsonUtils.ElementCallback<TicketLineImpl, Integer>() {
-
-            @Override
-            public void onResponseOk(TicketLineImpl element, Integer backref) {
-                importTicketLines(backref + 1);
-            }
-        });
-    }
+//    private void importTicketLines(int rowNum) {
+//        String json = dataTextBox.getText();
+//
+//        if (rowNum == 0) {
+//            try {
+//                importTicketLinesList = JsonUtils.asListOf(TicketLineImpl.class, "ticketline", json);
+//            } catch (RequestException ex) {
+//                Window.alert(ex.getLocalizedMessage());
+//                return;
+//            }
+//
+//        }
+//        if (rowNum >= importTicketLinesList.size()) {
+//            rowsLabel.setText("Done!");
+//            return;
+//        }
+//        rowsLabel.setText(new Integer(rowNum).toString() + " af " +
+//                new Integer(importTicketLinesList.size()).toString());
+//
+//        tlc.put(rowNum, importTicketLinesList.get(rowNum),
+//                new JsonUtils.ElementCallback<TicketLineImpl, Integer>() {
+//
+//            @Override
+//            public void onResponseOk(TicketLineImpl element, Integer backref) {
+//                importTicketLines(backref + 1);
+//            }
+//        });
+//    }
 
     public void updateSumMonths(Integer monthAdd) {
         CalendarUtil.addMonthsToDate(currentMonth, monthAdd-1);
@@ -751,6 +891,8 @@ public class TicketsUI extends Composite {
         nonfood0Label.setText("(vent)");
         food1Label.setText("(vent)");
         nonfood1Label.setText("(vent)");
+        total1Label.setText("(vent)");
+        total0Label.setText("(vent)");
         sumc.list(0, 2, new ListCallback<SumCategoryTypeImpl>() {
 
             @Override
@@ -788,6 +930,79 @@ public class TicketsUI extends Composite {
     public void ticketDetailsVisible(boolean visible) {
         
         
+    }
+
+    private void setupSumTable() {
+        sumTable.addColumn(new Column<Sum12Month, String>(new TextCell()) {
+
+            @Override
+            public String getValue(Sum12Month object) {
+                return object.getCategoryName();
+            }
+        }, new Header(new TextCell()) {
+
+            @Override
+            public Object getValue() {
+                return "Kategori";
+            }
+        });
+        
+        for (int i= 0; i < 12; i++) {
+            final int l = i;
+            sumTable.addColumn(new Column<Sum12Month, Double>(new AbstractCell<Double>() {
+
+                @Override
+                public void render(Context context, Double value, SafeHtmlBuilder sb) {
+                    sb.appendEscaped(DECIMALFORMAT.format(value));
+                }
+            })  {
+
+                @Override
+                public Double getValue(Sum12Month object) {
+                    if (object.getMonthSum() == null)
+                        return 0d;
+                    return object.getMonthSum()[l];
+                }
+            }, new Header(new TextCell()) {
+
+                @Override
+                public Object getValue() {
+                    return HumanMonthDate.getFormat()
+                            .format(addMonths(currentSum12MonthStartDate, l));
+                }
+            });
+
+            sumTable.getColumn(l+1).setHorizontalAlignment(HasHorizontalAlignment.ALIGN_RIGHT);
+        }
+
+        sumTable.addColumn(new Column<Sum12Month, Double>(new AbstractCell<Double>() {
+
+            @Override
+            public void render(Context context, Double value, SafeHtmlBuilder sb) {
+                sb.appendEscaped(DECIMALFORMAT.format(value));
+            }
+        }) {
+
+            @Override
+            public Double getValue(Sum12Month object) {
+                return object.getTotal();
+            }
+        }, "Total");
+        sumTable.getColumn(13).setHorizontalAlignment(HasHorizontalAlignment.ALIGN_RIGHT);
+
+    }
+
+    public static Date addMonths(Date date, int months) {
+        Date newDate = new Date(date.getTime());
+        CalendarUtil.addMonthsToDate(newDate, months);
+        return newDate;
+    }
+
+
+    public static Date firstInMonth(Date date) {
+        String format = DateTimeFormat.getFormat("yyyy-M").format(date);
+        format = format + "-1";
+        return JsonUtils.jsonFormat.parse(format);
     }
 
 

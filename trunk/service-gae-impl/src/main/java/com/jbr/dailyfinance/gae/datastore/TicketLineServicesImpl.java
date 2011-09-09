@@ -22,13 +22,18 @@ public class TicketLineServicesImpl extends BasicOperationsImpl<TicketLineSecura
         return new TicketLineImpl();
     }
 
-    public List<TicketLineSecurable> list(Long ticketId) {
+    /**
+     * Unsecure list of ticketlines of given ticketid
+     * @param ticketId
+     * @return
+     */
+    public List<TicketLineSecurable> listForAllUsers(Long ticketId) {
         if (ticketId == null)
             return super.list();
         final Query q = new Query(kind);
         q.addFilter(TicketLineImpl.p.ticketId.toString(),
                 Query.FilterOperator.EQUAL, ticketId);
-        return (List)SecuredDatastore.getList(clazz, q, 0, 10000);
+        return (List)UnsecuredDatastore.getList(clazz, q, 0, 10000);
     }
 
 

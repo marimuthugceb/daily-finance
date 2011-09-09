@@ -6,9 +6,8 @@ import java.util.Date;
  *
  * @author jbr
  */
-public interface SumCategoryType extends Entity {
-
+public interface SumCategory extends Entity {
     Date getSumDate();
+    Long getCategoryId();
     Double getSum();
-    Category.Type getCategoryType();
 }

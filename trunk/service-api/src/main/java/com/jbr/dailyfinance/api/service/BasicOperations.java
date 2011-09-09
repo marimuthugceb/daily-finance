@@ -20,6 +20,8 @@ public interface BasicOperations<E extends Entity> {
      * @return entity where persisted id is filled in
      */
     E put(E entity);
+    
+    E putUnsecured(E entity);
     /**
      * Delete the entity from persistence storage
      * @param entity
@@ -34,5 +36,8 @@ public interface BasicOperations<E extends Entity> {
      * Retrive a list of all entities
      * @return
      */
+    List<E> list();
     List<E> list(int startRecord, int records);
+    List<E> listUnsecured();
+    List<E> listUnsecured(int startRecord, int records);
 }

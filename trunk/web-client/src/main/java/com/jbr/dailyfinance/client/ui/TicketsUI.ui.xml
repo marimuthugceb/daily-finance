@@ -9,7 +9,7 @@ Uncomment this for XHTML entities
     <ui:style>
 
     </ui:style>
-    <g:TabLayoutPanel barHeight="20">
+    <g:TabLayoutPanel barHeight="20" ui:field='tabLayout'>
         <g:tab>
             <g:header size='7'>
                     Indtast nye indkøb
@@ -211,9 +211,18 @@ Uncomment this for XHTML entities
             <g:header size='7'>
                     Se summer
             </g:header>
-            <c:CellTable width='100%' ui:field='sumTable'/>
+            <g:LayoutPanel>
+                <g:layer top='1px' height='20px'>
+                    <g:MenuBar ui:field='sumMenuBar'/>
+                </g:layer>
+                <g:layer top='21px' bottom='0px'>
+                    <g:ScrollPanel>
+                        <c:CellTable width='100%' ui:field='sumTable'/>
+                    </g:ScrollPanel>
+                </g:layer>
+            </g:LayoutPanel>
         </g:tab>
-        <g:tab visible='false'>
+<!--        <g:tab visible='false'>
             <g:header size='7'>
                     Opsætning af varer mm.
             </g:header>
@@ -246,6 +255,6 @@ Uncomment this for XHTML entities
                 </g:layer>
             </g:LayoutPanel>
         </g:tab>
-
+-->
     </g:TabLayoutPanel>
 </ui:UiBinder>

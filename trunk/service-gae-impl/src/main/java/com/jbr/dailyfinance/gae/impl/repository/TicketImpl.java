@@ -46,7 +46,9 @@ public class TicketImpl extends BaseEntity implements Ticket, TicketSecurable {
     @XmlElement
     @Override
     public Date getTicketDate() {
-        return (Date) entity.getProperty(p.ticketDate.toString());
+        final Date date = (Date) entity.getProperty(p.ticketDate.toString());
+        System.out.println("Getting ticket date " + date);
+        return date;
     }
 
     @Override
