@@ -2,6 +2,7 @@ package com.jbr.dailyfinance.gae.impl.repository;
 
 import com.jbr.dailyfinance.api.repository.client.Category.Type;
 import com.jbr.dailyfinance.api.repository.client.SumCategoryType;
+import java.util.Date;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -14,6 +15,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement(name = "sumcategorytype")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class SumCategoryTypeImpl implements SumCategoryType {
+    Date sumDate;
     Type categoryType;
     Double sum;
 
@@ -42,6 +44,16 @@ public class SumCategoryTypeImpl implements SumCategoryType {
     public void setSum(Double sum) {
         this.sum = sum;
     }
+
+    @Override
+    public Date getSumDate() {
+        return sumDate;
+    }
+
+    public void setSumDate(Date date) {
+        sumDate = date;
+    }
+
 
 
 }

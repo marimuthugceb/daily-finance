@@ -92,7 +92,7 @@ public class TicketResource extends BaseEntityResource<TicketSecurable,
         final TicketSecurable t = get(id);
         final TicketLineServicesImpl tls = new TicketLineServicesImpl();
 
-        for (TicketLineSecurable tl : tls.list(id)) {
+        for (TicketLineSecurable tl : tls.listForAllUsers(id)) {
             tls.delete(tl);
         }
         delete(t);

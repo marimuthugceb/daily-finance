@@ -38,6 +38,11 @@ public abstract class BasicOperationsImpl<E extends SecurableEntity> implements 
     }
 
     @Override
+    public E putUnsecured(E entity) {
+        return (E) UnsecuredDatastore.put((DatastoreEntity)entity);
+    }
+
+    @Override
     public void delete(E entity) {
         try {
             SecuredDatastore.delete((DatastoreEntity)entity);
@@ -46,13 +51,25 @@ public abstract class BasicOperationsImpl<E extends SecurableEntity> implements 
         }
     }
 
+    @Override
     public List<E> list() {
-        return list(0, 10000);
+        return list(0, Integer.MAX_VALUE);
+    }
+
+    @Override
+    public List<E> listUnsecured() {
+        return listUnsecured(0, Integer.MAX_VALUE);
     }
 
     @Override
     public List<E> list(int startRecord, int records) {
         return (List)SecuredDatastore.getList(clazz,
+                new Query(kind), startRecord, records);
+    }
+
+    @Override
+    public List<E> listUnsecured(int startRecord, int records) {
+        return (List)UnsecuredDatastore.getList(clazz,
                 new Query(kind), startRecord, records);
     }
 }

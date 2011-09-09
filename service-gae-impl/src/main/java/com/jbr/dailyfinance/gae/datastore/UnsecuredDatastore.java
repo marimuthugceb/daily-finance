@@ -25,27 +25,20 @@ import java.util.List;
  *
  * @author jbr
  */
-public class SecuredDatastore  {
-    final static UserService userService = UserServiceFactory.getUserService();
+public class UnsecuredDatastore  {
     final static DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-    final static UserImpl user = new UserImpl();
 
     public static <T extends DatastoreEntity> T put(T entity) {
-        entity.setUser(user);
         Key key = datastore.put(entity.getEntity());
         System.out.println("Puttet key: " + key.getKind());
         return (T) entity;
     }
 
     public static <T extends DatastoreEntity> T get(Class clazz, String kind, long id)
-            throws EntityNotFoundException, NotAllowedException {
+            throws EntityNotFoundException {
         Entity entity = datastore.get(KeyFactory.createKey(kind, id));
         final T securedEntity = (T) toClazz(clazz, entity);
-        if (securedEntity.getUser().getEmail().equalsIgnoreCase(
-                userService.getCurrentUser().getEmail()))
-            return securedEntity;
-        else
-            throw new NotAllowedException("No access");
+        return securedEntity;
     }
 
     public static <T extends DatastoreEntity> T toClazz(Class<T> clazz, Entity entity) throws RuntimeException {
@@ -54,11 +47,7 @@ public class SecuredDatastore  {
             Object newInstance = constructor.newInstance(entity);
             if (newInstance instanceof SecurableEntity) {
                 SecurableEntity secEntity = (SecurableEntity) newInstance;
-                if (secEntity.getUser().getEmail().equals(userService.getCurrentUser().getEmail())) {
-                    return (T)secEntity;
-                } else {
-                    throw new NotAllowedException();
-                }
+                return (T)secEntity;
             } else {
                 throw new RuntimeException("New instance could not be casted to SecurableEntity");
             }
@@ -67,11 +56,8 @@ public class SecuredDatastore  {
         }
     }
 
-    public static void delete(DatastoreEntity entity) throws NotAllowedException {
-        if (entity.getUser().getEmail().equals(userService.getCurrentUser().getEmail()))
-            datastore.delete(entity.getEntity().getKey());
-        else
-            throw new NotAllowedException();
+    public static void delete(DatastoreEntity entity) {
+        datastore.delete(entity.getEntity().getKey());
     }
 
     public static <T extends DatastoreEntity> List<T> getList(
@@ -79,7 +65,6 @@ public class SecuredDatastore  {
             int startRow, int rowLimit) {
         if (query == null)
             throw new IllegalArgumentException("query is null");
-        query.addFilter("user", FilterOperator.EQUAL, userService.getCurrentUser());
         PreparedQuery pq = datastore.prepare(query);
         final List<Entity> asList = pq.asList(withOffset(startRow).limit(rowLimit));
         final List<T> toList = new ArrayList<T>(asList.size());

@@ -1,7 +1,6 @@
 package com.jbr.dailyfinance.client;
 
 import com.jbr.dailyfinance.client.entities.SumCategoryTypeImpl;
-import com.jbr.dailyfinance.web.rest.ISODate;
 import com.jbr.gwt.json.client.JsonUtils;
 import java.util.Date;
 

@@ -2,9 +2,7 @@ package com.jbr.dailyfinance.client.entities;
 
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.json.client.JSONObject;
-import com.jbr.dailyfinance.api.repository.client.Category;
-import com.jbr.dailyfinance.api.repository.client.Category.Type;
-import com.jbr.dailyfinance.api.repository.client.SumCategoryType;
+import com.jbr.dailyfinance.api.repository.client.SumCategory;
 import com.jbr.gwt.json.client.JsonUtils;
 import java.util.Date;
 
@@ -12,24 +10,22 @@ import java.util.Date;
  *
  * @author jbr
  */
-public final class SumCategoryTypeImpl extends JavaScriptObject implements SumCategoryType {
+public final class SumCategoryImpl extends JavaScriptObject implements SumCategory {
 
-    protected SumCategoryTypeImpl() {}
+    protected SumCategoryImpl() {}
 
     public final native String getSumRaw() /*-{ return this.sum; }-*/;
     @Override
     public final Double getSum() {
         return Double.valueOf(getSumRaw());
     }
-    public final native String getTypeRaw() /*-{ return this.categoryType; }-*/;
-    @Override
-    public final Type getCategoryType() {
-        if (getTypeRaw() == null)
-            return null;
-        return Category.Type.valueOf(getTypeRaw());
+
+    public final native String getCategoryIdRaw() /*-{ return this.categoryId; }-*/;
+    public final Long getCategoryId() {
+        return Long.valueOf(getCategoryIdRaw());
     }
 
-    public final SumCategoryTypeImpl toNewJsonEntity() {
+    public final SumCategoryImpl toNewJsonEntity() {
         return this;
     }
 
@@ -42,7 +38,7 @@ public final class SumCategoryTypeImpl extends JavaScriptObject implements SumCa
     public Date getSumDate() {
         if (getSumDateRaw() == null)
             return null;
-        return JsonUtils.jsonFormat.parse(getSumDateRaw());
+        return JsonUtils.jsonFormat.parse(getSumDateRaw().substring(0, 10));
     }
 
 }
