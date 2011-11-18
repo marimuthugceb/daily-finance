@@ -1,5 +1,6 @@
 package com.jbr.dailyfinance.gae.datastore;
 
+import com.google.appengine.api.memcache.MemcacheService;
 import com.jbr.dailyfinance.api.repository.server.SecurableEntity;
 import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.datastore.KeyFactory;
@@ -15,6 +16,7 @@ import com.google.appengine.api.users.UserServiceFactory;
 import com.jbr.dailyfinance.gae.impl.repository.UserImpl;
 
 import static com.google.appengine.api.datastore.FetchOptions.Builder.*;
+import com.google.appengine.api.memcache.MemcacheServiceFactory;
 import com.jbr.dailyfinance.gae.impl.repository.DatastoreEntity;
 
 import java.lang.reflect.Constructor;
@@ -29,17 +31,29 @@ public class SecuredDatastore  {
     final static UserService userService = UserServiceFactory.getUserService();
     final static DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
     final static UserImpl user = new UserImpl();
+    final static MemcacheService cache = MemcacheServiceFactory.getMemcacheService();
 
     public static <T extends DatastoreEntity> T put(T entity) {
         entity.setUser(user);
         Key key = datastore.put(entity.getEntity());
         System.out.println("Puttet key: " + key.getKind());
+        cache.put(key, entity.getEntity());
+        System.out.println("Puttet key in cache: " + key.getKind());
         return (T) entity;
     }
 
     public static <T extends DatastoreEntity> T get(Class clazz, String kind, long id)
             throws EntityNotFoundException, NotAllowedException {
-        Entity entity = datastore.get(KeyFactory.createKey(kind, id));
+        final Key key = KeyFactory.createKey(kind, id);
+        System.out.println("Fetching from cache, " + kind + "-" + id);
+        Entity entity = (Entity) cache.get(key);
+        if (entity == null) {
+            System.out.println("Not found in cache. Fetching from datastore");
+            entity = datastore.get(key);
+            cache.put(key, entity);
+        } else {
+            System.out.println("Found in cache!");
+        }
         final T securedEntity = (T) toClazz(clazz, entity);
         if (securedEntity.getUser().getEmail().equalsIgnoreCase(
                 userService.getCurrentUser().getEmail()))
@@ -68,8 +82,10 @@ public class SecuredDatastore  {
     }
 
     public static void delete(DatastoreEntity entity) throws NotAllowedException {
-        if (entity.getUser().getEmail().equals(userService.getCurrentUser().getEmail()))
+        if (entity.getUser().getEmail().equals(userService.getCurrentUser().getEmail())) {
+            cache.delete(entity.getEntity().getKey());
             datastore.delete(entity.getEntity().getKey());
+        }
         else
             throw new NotAllowedException();
     }

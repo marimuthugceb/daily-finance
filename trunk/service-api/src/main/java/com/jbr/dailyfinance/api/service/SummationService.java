@@ -2,7 +2,6 @@ package com.jbr.dailyfinance.api.service;
 
 import com.jbr.dailyfinance.api.repository.client.SumCategoryType;
 import java.util.Date;
-import java.util.List;
 
 /**
  *
@@ -10,6 +9,6 @@ import java.util.List;
  */
 public interface SummationService {
 
-    List<SumCategoryType> getSumOfMonthByCategoryType(Date month);
+    SumCategoryType getSumOfMonthByCategoryType(Date month);
     void updateSumCategories();
 }

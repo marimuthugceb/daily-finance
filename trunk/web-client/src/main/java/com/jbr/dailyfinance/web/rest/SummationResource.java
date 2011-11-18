@@ -25,8 +25,8 @@ public class SummationResource {
     @GET
     @Produces({"application/json", "application/xml"})
     @Path("month/{month}")
-    public List<SumCategoryTypeImpl> getTicket(@PathParam ("month") String month) throws ParseException {
-        return (List)sumService.getSumOfMonthByCategoryType(ISODate.dateFormat().parse(month));
+    public SumCategoryTypeImpl getTicket(@PathParam ("month") String month) throws ParseException {
+        return (SumCategoryTypeImpl) sumService.getSumOfMonthByCategoryType(ISODate.dateFormat().parse(month));
     }
 
     @GET

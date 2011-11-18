@@ -2,7 +2,7 @@
 <cronentries>
   <cron>
     <url>/resources/sum/update</url>
-    <description>Update sumcategories every 1 day</description>
-    <schedule>every 12 hours</schedule>
+    <description>Update sumcategories every the 1st</description>
+    <schedule>1 of month 01:00</schedule>
   </cron>
 </cronentries>

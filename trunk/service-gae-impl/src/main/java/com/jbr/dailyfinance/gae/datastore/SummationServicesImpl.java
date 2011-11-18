@@ -1,15 +1,18 @@
 package com.jbr.dailyfinance.gae.datastore;
 
+import com.google.appengine.api.memcache.MemcacheService;
+import com.google.appengine.api.memcache.MemcacheServiceFactory;
+import com.google.appengine.api.users.UserService;
+import com.google.appengine.api.users.UserServiceFactory;
 import com.jbr.dailyfinance.api.service.SummationService;
 import com.jbr.dailyfinance.api.repository.client.Category;
 import com.jbr.dailyfinance.api.repository.client.Category.Type;
 import com.jbr.dailyfinance.api.repository.client.SumCategoryType;
 import com.jbr.dailyfinance.api.repository.server.TicketLineSecurable;
 import com.jbr.dailyfinance.api.repository.server.TicketSecurable;
-import com.jbr.dailyfinance.api.service.TicketServices;
 import com.jbr.dailyfinance.gae.impl.repository.SumCategoryImpl;
 import com.jbr.dailyfinance.gae.impl.repository.SumCategoryTypeImpl;
-import java.util.Arrays;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.EnumMap;
@@ -22,8 +25,60 @@ import java.util.List;
  * @author jbr
  */
 public class SummationServicesImpl implements SummationService {
+
+    private final static MemcacheService cache = MemcacheServiceFactory.getMemcacheService();
+    private final static SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MMyy");
+
+    private static final UserService userService = UserServiceFactory.getUserService();
+    private static final String SUMCATEGORYMONTH_KEY_ID = "SUMCATEGORYMONTH";
+
+    private static String getCacheKey(String monthAndYear) {
+        return SUMCATEGORYMONTH_KEY_ID + "/" + monthAndYear + "/" + userService.getCurrentUser().getEmail();
+    }
+
+    private static void putSumOfMonthByCategoryTypeInCache(Date month, SumCategoryType sum) {
+        System.out.println(String.format("Putting sumOfMonth %s to cache!", toMonthAndYear(month)));
+        cache.put(getCacheKey(toMonthAndYear(month)), sum);
+    }
+
+    private static SumCategoryType getSumOfMonthByCategoryTypeFromCache(Date month) {
+        return (SumCategoryType) cache.get(getCacheKey(toMonthAndYear(month)));
+    }
+
+    /**
+     * To update cache
+     * @param sct
+     */
+    public static void addToSumOfMonth(Date date, Category.Type categoryType, double amount) {
+        System.out.println("Adding amount to month sum in cache");
+        SumCategoryType sumCache =
+                getSumOfMonthByCategoryTypeFromCache(date);
+        if (sumCache == null) {
+            System.out.println(String.format("New month %s created in cache", toMonthAndYear(date)));
+            sumCache = new SumCategoryTypeImpl(date, categoryType, amount);
+        } else {
+            Double sum = sumCache.getSumWithType().get(categoryType);
+            if (sum == null)
+                sum = amount;
+            else
+                sum+=amount;
+            System.out.println(String.format("Putting new sum %s in cache", sum));
+            sumCache.getSumWithType().put(categoryType, sum);
+            putSumOfMonthByCategoryTypeInCache(date, sumCache);
+        }
+    }
+
+
     @Override
-    public List<SumCategoryType> getSumOfMonthByCategoryType(Date month) {
+    public SumCategoryType getSumOfMonthByCategoryType(Date month) {
+        final SumCategoryType sumOfMonthByCategoryType =
+                getSumOfMonthByCategoryTypeFromCache(month);
+        if (sumOfMonthByCategoryType != null) {
+            System.out.println(String.format("Returning sumOfMonth %s from cache as %s!",
+                    toMonthAndYear(month), sumOfMonthByCategoryType));
+            return sumOfMonthByCategoryType;
+        }
+
         EnumMap<Category.Type, Double> returnMap = new EnumMap<Category.Type, Double>(Category.Type.class);
         returnMap.put(Type.food, Double.valueOf(0d));
         returnMap.put(Type.nonFood, Double.valueOf(0d));
@@ -46,13 +101,15 @@ public class SummationServicesImpl implements SummationService {
             }
 
         }
-        System.out.println("Sum map: " + returnMap.toString());
-        return (List)Arrays.asList(
-                new SumCategoryTypeImpl(Type.food, returnMap.get(Type.food)),
-                new SumCategoryTypeImpl(Type.nonFood, returnMap.get(Type.nonFood)));
+        System.out.println("Sum map: " + returnMap.toString() + " for " + toMonthAndYear(month));
+        SumCategoryTypeImpl sumCategoryType = new SumCategoryTypeImpl();
+        sumCategoryType.setSumDate(startDate);
+        sumCategoryType.setSumWithType(returnMap);
+        putSumOfMonthByCategoryTypeInCache(month, sumCategoryType);
+        return sumCategoryType;
     }
 
-    public Date firstInMonth(Date month) {
+    public static Date firstInMonth(Date month) {
         if (month == null)
             throw new IllegalArgumentException("Date is null");
         Calendar c = GregorianCalendar.getInstance();
@@ -62,7 +119,11 @@ public class SummationServicesImpl implements SummationService {
         return startDate;
     }
 
-    public Date firstInNextMonth(Date startDate) {
+    public static String toMonthAndYear(Date month) {
+        return simpleDateFormat.format(month);
+    }
+
+    public static Date firstInNextMonth(Date startDate) {
         Calendar c1 = GregorianCalendar.getInstance();
         c1.setTime(startDate);
         c1.add(Calendar.MONTH, 1);
@@ -104,8 +165,13 @@ public class SummationServicesImpl implements SummationService {
                     sc.setSumDate(firstInMonth);
                     sc.setSum(tl.getAmount());
                     sc.setUser(tl.getUser());
+                    sc.setTicketIds(t.getId().toString() + ",");
+                    sc.setTicketLineIds(tl.getId().toString() + ",");
+
                 } else {
                     sc.setSum(tl.getAmount() + sc.getSum());
+                    sc.addTicketId(t.getId());
+                    sc.addTicketLineId(tl.getId());
                 }
                 scserv.putUnsecured(sc);
             }
