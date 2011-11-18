@@ -39,12 +39,20 @@ public class  JsonUtils {
 
     public static <T extends JavaScriptObject> List<T>
             asListOf(Class<T> c, String jsonObjectName, String jsonString) throws RequestException {
+
         if (jsonString.equalsIgnoreCase("null")) {
             return new ArrayList<T>();
         }
         JSONValue jv = JSONParser.parseStrict(jsonString);
         JSONObject o = jv.isObject();
+        return asListOf(c, jsonObjectName, o.getJavaScriptObject());
 
+    }
+
+    public static <T extends JavaScriptObject> List<T>
+            asListOf(Class<T> c, String jsonObjectName, JavaScriptObject jso) throws RequestException {
+
+        JSONObject o = new JSONObject(jso);
         final List<T> list = new ArrayList<T>();
         if (o == null || !o.containsKey(jsonObjectName)) {
             if (o.isArray() == null  && o.getJavaScriptObject() != null) {
@@ -66,6 +74,8 @@ public class  JsonUtils {
         }
         return list;
     }
+
+
 
     public static <T extends JavaScriptObject> List<T> asListOf(JsArray<T> jsArray) {
         List<T> ret = new ArrayList<T>(jsArray.length());

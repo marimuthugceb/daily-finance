@@ -5,6 +5,7 @@ import com.google.gwt.json.client.JSONObject;
 import com.jbr.dailyfinance.api.repository.client.SumCategory;
 import com.jbr.gwt.json.client.JsonUtils;
 import java.util.Date;
+import java.util.List;
 
 /**
  *
@@ -39,6 +40,16 @@ public final class SumCategoryImpl extends JavaScriptObject implements SumCatego
         if (getSumDateRaw() == null)
             return null;
         return JsonUtils.jsonFormat.parse(getSumDateRaw().substring(0, 10));
+    }
+
+    @Override
+    public List<Long> getTicketIds() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public List<Long> getTicketLineIds() {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
 }

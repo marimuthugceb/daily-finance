@@ -57,6 +57,23 @@ public class TicketResource extends BaseEntityResource<TicketSecurable,
 
     @GET
     @Produces({"application/json", "application/xml"})
+//    public List<TicketImpl> getAllByCategoryIdAndMonth(
+//            @PathParam("categoryId") Long categoryId,
+//            @PathParam("ticketDate") String ticketDate) throws ParseException {
+//        List<TicketSecurable> all = getServiceImpl().getTickets(ticketDate==null?null:
+//                ISODate.dateFormat().parse(ticketDate));
+//        Collections.sort(all, new Comparator<TicketSecurable>() {
+//
+//            @Override
+//            public int compare(TicketSecurable o1, TicketSecurable o2) {
+//                return o1.getTicketDate().compareTo(o2.getTicketDate());
+//            }
+//        });
+//        return (List)all;
+//    }
+//
+//    @GET
+//    @Produces({"application/json", "application/xml"})
     @Path("/makeTest")
     public TicketImpl makeATicket() {
         new StoreResource().makeSome();

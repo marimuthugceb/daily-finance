@@ -884,6 +884,12 @@ public class TicketsUI extends Composite {
 //    }
 
     public void updateSumMonths(Integer monthAdd) {
+//        food0Label.setText("");
+//        nonfood0Label.setText("");
+//        food1Label.setText("");
+//        nonfood1Label.setText("");
+//        total1Label.setText("");
+//        total0Label.setText("");
         CalendarUtil.addMonthsToDate(currentMonth, monthAdd-1);
         sumc.setMonth(currentMonth);
         month0Label.setText(MONTHFORMAT.format(currentMonth));
@@ -897,14 +903,21 @@ public class TicketsUI extends Composite {
 
             @Override
             public void onResponseOk(List<SumCategoryTypeImpl> list) {
-                if (list.get(0).getCategoryType() == Category.Type.food) {
-                    food0Label.setText(DECIMALFORMAT.format(list.get(0).getSum()));
-                    nonfood0Label.setText(DECIMALFORMAT.format(list.get(1).getSum()));
-                } else {
-                    food0Label.setText(DECIMALFORMAT.format(list.get(1).getSum()));
-                    nonfood0Label.setText(DECIMALFORMAT.format(list.get(0).getSum()));
-                }
-                total0Label.setText(DECIMALFORMAT.format(list.get(0).getSum() + list.get(1).getSum()));
+                System.out.println("Response for sum month " +
+                list.get(0).getSumWithTypeRaw());
+                food0Label.setText(DECIMALFORMAT.format(list.get(0).getSumWithType().get(Type.food)));
+                nonfood0Label.setText(DECIMALFORMAT.format(list.get(0).getSumWithType().get(Type.nonFood)));
+
+//                if (list.get(0).getCategoryType() == Category.Type.food) {
+//                    food0Label.setText(DECIMALFORMAT.format(list.get(0).getSum()));
+//                    nonfood0Label.setText(DECIMALFORMAT.format(list.get(1).getSum()));
+//                } else {
+//                    food0Label.setText(DECIMALFORMAT.format(list.get(1).getSum()));
+//                    nonfood0Label.setText(DECIMALFORMAT.format(list.get(0).getSum()));
+//                }
+                total0Label.setText(DECIMALFORMAT.format(
+                        list.get(0).getSumWithType().get(Type.food) +
+                        list.get(0).getSumWithType().get(Type.nonFood)));
             }
         });
         CalendarUtil.addMonthsToDate(currentMonth, 1);
@@ -914,14 +927,20 @@ public class TicketsUI extends Composite {
 
             @Override
             public void onResponseOk(List<SumCategoryTypeImpl> list) {
-                if (list.get(0).getCategoryType() == Category.Type.food) {
-                    food1Label.setText(DECIMALFORMAT.format(list.get(0).getSum()));
-                    nonfood1Label.setText(DECIMALFORMAT.format(list.get(1).getSum()));
-                } else {
-                    food1Label.setText(DECIMALFORMAT.format(list.get(1).getSum()));
-                    nonfood1Label.setText(DECIMALFORMAT.format(list.get(0).getSum()));
-                }
-                total1Label.setText(DECIMALFORMAT.format(list.get(0).getSum() + list.get(1).getSum()));
+                System.out.println("Response for sum month " +
+                list.get(0).getSumWithTypeRaw());
+                food1Label.setText(DECIMALFORMAT.format(list.get(0).getSumWithType().get(Type.food)));
+                nonfood1Label.setText(DECIMALFORMAT.format(list.get(0).getSumWithType().get(Type.nonFood)));
+//                if (list.get(0).getCategoryType() == Category.Type.food) {
+//                    food1Label.setText(DECIMALFORMAT.format(list.get(0).getSum()));
+//                    nonfood1Label.setText(DECIMALFORMAT.format(list.get(1).getSum()));
+//                } else {
+//                    food1Label.setText(DECIMALFORMAT.format(list.get(1).getSum()));
+//                    nonfood1Label.setText(DECIMALFORMAT.format(list.get(0).getSum()));
+//                }
+                total1Label.setText(DECIMALFORMAT.format(
+                        list.get(0).getSumWithType().get(Type.food) +
+                        list.get(0).getSumWithType().get(Type.nonFood)));
             }
         });
 
