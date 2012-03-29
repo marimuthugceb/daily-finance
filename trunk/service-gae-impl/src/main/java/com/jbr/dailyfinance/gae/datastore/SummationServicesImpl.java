@@ -17,7 +17,9 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.EnumMap;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -27,13 +29,20 @@ import java.util.List;
 public class SummationServicesImpl implements SummationService {
 
     private final static MemcacheService cache = MemcacheServiceFactory.getMemcacheService();
-    private final static SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MMyy");
+    private final static SimpleDateFormat df = new SimpleDateFormat("MMyy");
 
     private static final UserService userService = UserServiceFactory.getUserService();
     private static final String SUMCATEGORYMONTH_KEY_ID = "SUMCATEGORYMONTH";
 
+    private static final Map<String, SumCategoryImpl> categoryCache =
+            new HashMap<String, SumCategoryImpl>();
+
     private static String getCacheKey(String monthAndYear) {
         return SUMCATEGORYMONTH_KEY_ID + "/" + monthAndYear + "/" + userService.getCurrentUser().getEmail();
+    }
+
+    private static String getCacheKey(String monthAndYear, long id) {
+        return SUMCATEGORYMONTH_KEY_ID + "/" + monthAndYear + "/" + Long.toString(id);
     }
 
     private static void putSumOfMonthByCategoryTypeInCache(Date month, SumCategoryType sum) {
@@ -44,6 +53,20 @@ public class SummationServicesImpl implements SummationService {
     private static SumCategoryType getSumOfMonthByCategoryTypeFromCache(Date month) {
         return (SumCategoryType) cache.get(getCacheKey(toMonthAndYear(month)));
     }
+
+    private static void putSumOfMonthByCategoryInCache(Date month, SumCategoryImpl category) {
+        System.out.println(String.format("Putting sumOfMonth %s to cache!",
+                toMonthAndYear(month)));
+        categoryCache.put(getCacheKey(toMonthAndYear(month), category.getCategoryId()), category);
+    }
+
+    private static SumCategoryImpl getSumOfMonthByCategoryFromCache(Date month,
+            long categoryId) {
+        return (SumCategoryImpl) categoryCache.get(getCacheKey(toMonthAndYear(month),
+                categoryId));
+    }
+
+
 
     /**
      * To update cache
@@ -120,7 +143,7 @@ public class SummationServicesImpl implements SummationService {
     }
 
     public static String toMonthAndYear(Date month) {
-        return simpleDateFormat.format(month);
+        return df.format(month);
     }
 
     public static Date firstInNextMonth(Date startDate) {
@@ -151,14 +174,21 @@ public class SummationServicesImpl implements SummationService {
         final TicketServicesImpl tsserv = new TicketServicesImpl();
         final TicketLineServicesImpl tlserv = new TicketLineServicesImpl();
         final SumCategoryServicesImpl scserv = new SumCategoryServicesImpl();
-        scserv.deleteAll();
+        categoryCache.clear();
 
-        List<TicketSecurable> tls = tsserv.listUnsecured();
+        //List<TicketSecurable> tls = tsserv.listUnsecured();
+        System.out.println("Searching for tickets...");
+        List<TicketSecurable> tls = tsserv.getTickets(new Date(2011-1900, 1-4, 1),
+                new Date(2013-1900, 1-1, 1));
+
         for (TicketSecurable t : tls) {
+            System.out.println("Summing ticketid " + t.getId());
             Date firstInMonth = firstInMonth(t.getTicketDate());
             for (TicketLineSecurable tl : tlserv.listForAllUsers(t.getId())) {
-                SumCategoryImpl sc = (SumCategoryImpl) scserv
-                        .get(firstInMonth, tl.getCategoryId());
+                SumCategoryImpl sc = getSumOfMonthByCategoryFromCache(
+                        firstInMonth, tl.getCategoryId());
+//                SumCategoryImpl sc = (SumCategoryImpl) scserv
+//                        .get(firstInMonth, tl.getCategoryId());
                 if (sc == null) {
                     sc = new SumCategoryImpl();
                     sc.setCategoryId(tl.getCategoryId());
@@ -173,8 +203,19 @@ public class SummationServicesImpl implements SummationService {
                     sc.addTicketId(t.getId());
                     sc.addTicketLineId(tl.getId());
                 }
-                scserv.putUnsecured(sc);
+                putSumOfMonthByCategoryInCache(firstInMonth, sc);
+                //scserv.putUnsecured(sc);
             }
         }
+
+        // Persist sums
+        scserv.deleteAll();
+        System.out.println(String.format("Persisting %s sumcategories.",
+                categoryCache.keySet().size()));
+        for (String key : categoryCache.keySet()) {
+            SumCategoryImpl sc = categoryCache.get(key);
+            scserv.putUnsecured(sc);
+        }
     }
+
 }
