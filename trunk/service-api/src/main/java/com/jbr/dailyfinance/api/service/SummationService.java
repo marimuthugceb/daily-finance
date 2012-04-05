@@ -10,5 +10,5 @@ import java.util.Date;
 public interface SummationService {
 
     SumCategoryType getSumOfMonthByCategoryType(Date month);
-    void updateSumCategories();
+    void updateSumCategories(int mm, int yyyy);
 }
