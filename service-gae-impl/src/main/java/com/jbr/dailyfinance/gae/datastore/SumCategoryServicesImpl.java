@@ -1,13 +1,21 @@
 package com.jbr.dailyfinance.gae.datastore;
 
+import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.datastore.Query;
 import com.jbr.dailyfinance.api.repository.client.SumCategory;
+import com.jbr.dailyfinance.api.repository.server.CategorySecurable;
 import com.jbr.dailyfinance.api.repository.server.SumCategorySecurable;
+import com.jbr.dailyfinance.api.service.CategoryServices;
 import com.jbr.dailyfinance.api.service.SumCategoryServices;
 import com.jbr.dailyfinance.gae.impl.repository.DatastoreEntity;
 import com.jbr.dailyfinance.gae.impl.repository.SumCategoryImpl;
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -57,15 +65,59 @@ public class SumCategoryServicesImpl extends BasicOperationsImpl<SumCategorySecu
     }
 
     public List<SumCategorySecurable> list(Date startdate, Date enddate) {
-        Query q = new Query(SumCategoryImpl.KIND);
-        q.addFilter(SumCategoryImpl.p.sumDate.toString(),
-                Query.FilterOperator.GREATER_THAN_OR_EQUAL, startdate);
-        q.addFilter(SumCategoryImpl.p.sumDate.toString(),
-                Query.FilterOperator.LESS_THAN_OR_EQUAL, enddate);
-        List<DatastoreEntity> list = SecuredDatastore.getList(
-                clazz, q, 0, Integer.MAX_VALUE);
+        System.out.println(String.format("Getting SumCategories between %s and %s",
+                startdate, enddate));
+        ArrayList<SumCategorySecurable> returnList = new ArrayList<SumCategorySecurable>();
+        Calendar c = new GregorianCalendar();
+        c.setTime(startdate);
+        final CategoryServices cc = new CategoryServicesImpl();
+        final List<CategorySecurable> categories = cc.list();
 
-        return (List)list;
+        while (c.getTime().before(enddate)) {
+            c.add(Calendar.MONTH, 1);
+            final Date currentdate = c.getTime();
+            for (CategorySecurable category : categories) {
+                System.out.println(String.format(
+                        "Now getting sums for category %s, at %s",
+                        category.getName(), currentdate));
+                SumCategoryImpl sumCategory = SummationServicesImpl
+                        .getSumOfMonthByCategoryFromCache(currentdate, category.getId());
+                // If nothing found in cache then try get from datastore
+                if (sumCategory != null) {
+                    System.out.println("Found in cache!");
+                } else {
+                    System.out.println("Not found in cache, now checking datastore");
+                    try {
+                        final String cacheKey = SummationServicesImpl.getCacheKey(
+                                currentdate, category.getId());
+                        sumCategory = SecuredDatastore.get(clazz, kind, cacheKey);
+                        System.out.println(String.format("Got %s from datastore on key %s",
+                                sumCategory, cacheKey));
+                        SummationServicesImpl.putSumOfMonthByCategoryInCache(
+                                currentdate, sumCategory);
+                    } catch (EntityNotFoundException ex) {
+                        System.out.println("SumCategory '" + category.getName() + "' not found in datastore");
+                        continue;
+                    } catch (NotAllowedException ex) {
+                        System.err.println(ex);
+                        continue;
+                    }
+                }
+                returnList.add(sumCategory);
+            }
+        }
+
+
+        return returnList;
+//        Query q = new Query(SumCategoryImpl.KIND);
+//        q.addFilter(SumCategoryImpl.p.sumDate.toString(),
+//                Query.FilterOperator.GREATER_THAN_OR_EQUAL, startdate);
+//        q.addFilter(SumCategoryImpl.p.sumDate.toString(),
+//                Query.FilterOperator.LESS_THAN_OR_EQUAL, enddate);
+//        List<DatastoreEntity> list = SecuredDatastore.getList(
+//                clazz, q, 0, Integer.MAX_VALUE);
+//
+//        return (List)list;
     }
 
 }

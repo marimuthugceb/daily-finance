@@ -51,9 +51,19 @@ public class SummationResource {
 
     @GET
     @Produces("text/plain")
-    @Path("update")
-    public String updateSumCategories() {
-        sumService.updateSumCategories();
+    @Path("update/{mm}/{yyyy}")
+    public String updateSumCategories(
+        @PathParam ("mm") Integer mm,
+        @PathParam ("yyyy") Integer yyyy) {
+        sumService.updateSumCategories(mm,yyyy);
+        return "Ok. Sums is updated";
+    }
+    @GET
+    @Produces("text/plain")
+    @Path("update/{yyyy}")
+    public String updateSumCategories(
+        @PathParam ("yyyy") Integer yyyy) {
+        sumService.updateSumCategories(yyyy);
         return "Ok. Sums is updated";
     }
 }

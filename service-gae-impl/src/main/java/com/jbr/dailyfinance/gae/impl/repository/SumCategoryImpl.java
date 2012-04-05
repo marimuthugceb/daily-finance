@@ -5,7 +5,6 @@ import com.jbr.dailyfinance.api.repository.client.SumCategory;
 import com.jbr.dailyfinance.api.repository.server.SumCategorySecurable;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
@@ -52,8 +51,8 @@ public class SumCategoryImpl extends BaseEntity
         ticketLineIds;
     }
 
-    public SumCategoryImpl(Long id) {
-        super(id, KIND);
+    public SumCategoryImpl(String name) {
+        super(name, KIND);
     }
 
     public SumCategoryImpl() {

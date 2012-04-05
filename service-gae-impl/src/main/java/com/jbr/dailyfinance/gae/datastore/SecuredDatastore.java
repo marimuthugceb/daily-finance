@@ -33,6 +33,7 @@ public class SecuredDatastore  {
     final static UserImpl user = new UserImpl();
     final static MemcacheService cache = MemcacheServiceFactory.getMemcacheService();
 
+
     public static <T extends DatastoreEntity> T put(T entity) {
         entity.setUser(user);
         Key key = datastore.put(entity.getEntity());
@@ -42,10 +43,8 @@ public class SecuredDatastore  {
         return (T) entity;
     }
 
-    public static <T extends DatastoreEntity> T get(Class clazz, String kind, long id)
-            throws EntityNotFoundException, NotAllowedException {
-        final Key key = KeyFactory.createKey(kind, id);
-        System.out.println("Fetching from cache, " + kind + "-" + id);
+    public static <T extends DatastoreEntity> T get(final Key key, Class clazz)
+            throws EntityNotFoundException, NotAllowedException, RuntimeException {
         Entity entity = (Entity) cache.get(key);
         if (entity == null) {
             System.out.println("Not found in cache. Fetching from datastore");
@@ -56,10 +55,27 @@ public class SecuredDatastore  {
         }
         final T securedEntity = (T) toClazz(clazz, entity);
         if (securedEntity.getUser().getEmail().equalsIgnoreCase(
-                userService.getCurrentUser().getEmail()))
+                userService.getCurrentUser().getEmail())) {
             return securedEntity;
-        else
-            throw new NotAllowedException("No access");
+        } else {
+            throw new NotAllowedException(String.format("No access, to key %s, for user %s",
+                    key, userService.getCurrentUser().getEmail()));
+        }
+
+    }
+
+    public static <T extends DatastoreEntity> T get(Class clazz, String kind, String name)
+            throws EntityNotFoundException, NotAllowedException {
+        final Key key = KeyFactory.createKey(kind, name);
+        System.out.println("Fetching from cache, " + kind + "-" + name);
+        return get(key, clazz);
+    }
+
+    public static <T extends DatastoreEntity> T get(Class clazz, String kind, long id)
+            throws EntityNotFoundException, NotAllowedException {
+        final Key key = KeyFactory.createKey(kind, id);
+        System.out.println("Fetching from cache, " + kind + "-" + id);
+        return get(key, clazz);
     }
 
     public static <T extends DatastoreEntity> T toClazz(Class<T> clazz, Entity entity) throws RuntimeException {
@@ -97,7 +113,8 @@ public class SecuredDatastore  {
             throw new IllegalArgumentException("query is null");
         query.addFilter("user", FilterOperator.EQUAL, userService.getCurrentUser());
         PreparedQuery pq = datastore.prepare(query);
-        final List<Entity> asList = pq.asList(withOffset(startRow).limit(rowLimit));
+
+        final List<Entity> asList = pq.asList(withChunkSize(1000).offset(startRow).limit(rowLimit));
         final List<T> toList = new ArrayList<T>(asList.size());
         for (Entity entity : asList) {
             toList.add((T) toClazz(clazz, entity));
